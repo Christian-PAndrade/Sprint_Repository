@@ -6,7 +6,6 @@ const schema = buildSchema(`
         userbyid(id: String): User,
         usersbyproject(id: String): [User],
         useradmin: [User],
-        userbyproj(projid: String): [User],
 
         projects: [Project],
         projectsbyname(name: String): Project,
@@ -50,16 +49,19 @@ const schema = buildSchema(`
     }
 
     type User {
+        id: String
         username: String
         isAdmin: Boolean
         projectId: String
     }
 
     type Project {
+        id: String
         name: String
     }
 
     type Board {
+        id: String
         startDate: String
         endDate: String
         name: String
@@ -67,6 +69,7 @@ const schema = buildSchema(`
     }
 
     type UserStory {
+        id: String
         name: String
         creationDate: String
         completionDate: String
@@ -78,6 +81,7 @@ const schema = buildSchema(`
     }
 
     type Task {
+        id: String
         name: String
         creationDate: String
         completionDate: String
@@ -89,6 +93,7 @@ const schema = buildSchema(`
     }
 
     type UserEstimate {
+        id: String
         userEstimation: Float
         actualValue: Float
         accuracy: Float
@@ -96,17 +101,20 @@ const schema = buildSchema(`
     }
 
     type TeamEstimate {
+        id: String
         accuracy: Float
         teamEstimates_boardId: String
     }
 
     type UserVelocity {
+        id: String
         velocity: Float
         userVelocity_userId: String
         userVelocity_boardId: String
     }
 
     type TeamVelocity {
+        id: String
         velocity: Float
         teamVelocity_boardId: String
     }
@@ -130,14 +138,14 @@ const schema = buildSchema(`
         deleteuvelocity(id: String): Int, 
         deletetvelocity(id: String): Int,
 
-        updateuser(name: String, isAdmin: String, projectId: String): User,
-        updateproject(name: String): Project,
-        updateuserstory(name: String, creationDate: String, completionDate: String, status: String, estimate: Float, hoursWorked: Float, reestimate: String, boarId: String): UserStory,
-        updatetask(name: String, creationDate: String, completionDate: String, status: String, estimate: Float, sprint: String, userstory: String, userassigned: String): Task,
-        updateuestimate(estimate: Float, actual: Float, accuracy: Float, board: String) : UserEstimate,
-        updatetestimate(accuracy: Float, boardid: String) : TeamEstimate,
-        updateuvelocity(velocity: Float, userid: String, boardid: String): UserVelocity,
-        updatetvelocity(velocity: Float, boardid: String): TeamVelocity,
+        updateuser(id: String, name: String, isAdmin: Boolean, projectId: String): User,
+        updateproject(id: String, name: String): Project,
+        updateuserstory(id: String, name: String, creationDate: String, completionDate: String, status: String, estimate: Float, hoursWorked: Float, reestimate: String, boarId: String): UserStory,
+        updatetask(id: String, name: String, creationDate: String, completionDate: String, status: String, estimate: Float, sprint: String, userstory: String, userassigned: String): Task,
+        updateuestimate(id: String, estimate: Float, actual: Float, accuracy: Float, board: String) : UserEstimate,
+        updatetestimate(id: String, accuracy: Float, boardid: String) : TeamEstimate,
+        updateuvelocity(id: String, velocity: Float, userid: String, boardid: String): UserVelocity,
+        updatetvelocity(id: String, velocity: Float, boardid: String): TeamVelocity,
     }
 `);
 

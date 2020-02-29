@@ -24,3 +24,6 @@ yarn-error.log*
 
 # env file
 .env
+
+#backend
+/backend/README.md

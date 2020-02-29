@@ -16,7 +16,6 @@ const loadDB = async () => {
       useUnifiedTopology: true
     });
     db_instance = client.db(db);
-    console.log("db loaded");
   } catch (err) {
     console.log(err);
   }
