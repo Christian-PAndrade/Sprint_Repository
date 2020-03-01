@@ -122,7 +122,7 @@ const schema = buildSchema(`
     type Mutation {
         adduser(name: String, isAdmin: Boolean, projectId: String): User,
         addproject(name: String): Project,
-        adduserstory(name: String, creationDate: String, completionDate: String, status: String, estimate: Float, hoursWorked: Float, reestimate: String, boarId: String): UserStory,
+        adduserstory(name: String, creationDate: String, completionDate: String, status: String, estimate: Float, hoursWorked: Float, reestimate: String, boardId: String): UserStory,
         addtask(name: String, creationDate: String, completionDate: String, status: String, estimate: Float, sprint: String, userstory: String, userassigned: String): Task,
         adduestimate(estimate: Float, actual: Float, accuracy: Float, board: String) : UserEstimate,
         addtestimate(accuracy: Float, boardid: String) : TeamEstimate,

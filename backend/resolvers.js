@@ -269,8 +269,12 @@ const resolvers = {
     );
   },
 
+  //
   // Mutations
+  //
+
   // Adds
+  // Add a User
   adduser: async args => {
     let db = await rts.loadDB();
     let user = {
@@ -282,10 +286,135 @@ const resolvers = {
     return results.insertedCount === 1 ? user : null;
   },
 
+  // Add a Project by name
+  addproject: async args => {
+    let db = await rts.loadDB();
+    let project = {
+      name: args.name
+    };
+    let results = await rts.addOne(db, "Projects", project);
+    return results.insertedCount === 1 ? project : null;
+  },
+
+  // Add a user story
+  adduserstory: async args => {
+    let db = await rts.loadDB();
+    let userStory = {
+      name: args.name,
+      creationDate: new Date(),
+      status: args.status,
+      estimate: args.estimate,
+      hoursWorked: args.hoursWorked,
+      reestimate: args.reestimate,
+      userStory_boardId: new mongo.ObjectID(args.boardId)
+    };
+
+    let results = await rts.addOne(db, "UserStories", userStory);
+    return results.insertedCount === 1 ? userStory : null;
+  },
+
+  // Add a new task
+  addtask: async args => {
+    let db = await rts.loadDB();
+    let task = {
+      name: args.name,
+      creationDate: new Date(),
+      status: args.status,
+      estimate: args.estimate,
+      task_sprint: new mongo.ObjectID(args.sprint),
+      task_userStoryId: new mongo.ObjectID(args.userstory),
+      task_assignedToId: new mongo.ObjectID(args.userassigned)
+    };
+
+    let results = await rts.addOne(db, "Tasks", task);
+    return results.insertedCount === 1 ? task : null;
+  },
+
+  // Add user estimate
+  adduestimate: async args => {
+    let db = await rts.loadDB();
+    let userEstimate = {
+      userEstimation: args.estimate,
+      actualValue: args.actual,
+      accuracy: args.accuracy,
+      userEstimates_boardId: new mongo.ObjectID(args.board)
+    };
+
+    let results = await rts.addOne(db, "UserEstimates", userEstimate);
+    return results.insertedCount === 1 ? userEstimate : null;
+  },
+
+  // Add Team Estimate
+  addtestimate: async args => {
+    let db = await rts.loadDB();
+    let teamEstimate = {
+      accuracy: args.accuracy,
+      teamEstimates_boardId: new mongo.ObjectID(args.boardid)
+    };
+
+    let results = await rts.addOne(db, "TeamEstimates", teamEstimate);
+    return results.insertedCount === 1 ? teamEstimate : null;
+  },
+
+  // Add User Velocity
+  adduvelocity: async args => {
+    let db = await rts.loadDB();
+    let userVelocity = {
+      velocity: args.velocity,
+      userVelocity_userId: new mongo.ObjectID(args.userid),
+      userVelocity_boardId: new mongo.ObjectID(args.boardid)
+    };
+
+    let results = await rts.addOne(db, "UserVelocity", userVelocity);
+    return results.insertedCount === 1 ? userVelocity : null;
+  },
+
+  // Team VVelocity
+  addtvelocity: async args => {
+    let db = await rts.loadDB();
+    let teamVelocity = {
+      velocity: args.velocity,
+      teamVelocity_boardId: new mongo.ObjectID(args.boardid)
+    };
+
+    let results = await rts.addOne(db, "TeamVelocity", teamVelocity);
+    return results.insertedCount === 1 ? teamVelocity : null;
+  },
+
+  //
   // Deletes
+  //
+  // Delete User
   deleteuser: async args => {
     let db = await rts.loadDB();
     let results = await rts.deleteOne(db, "Users", {
+      _id: new mongo.ObjectID(args.id)
+    });
+    return results.deletedCount;
+  },
+
+  // Delete Project by ID
+  deleteproject: async args => {
+    let db = await rts.loadDB();
+    let results = await rts.deleteOne(db, "Projects", {
+      _id: new mongo.ObjectID(args.id)
+    });
+    return results.deletedCount;
+  },
+
+  // Delete a User Story
+  deleteuserstory: async args => {
+    let db = await rts.loadDB();
+    let results = await rts.deleteOne(db, "UserStories", {
+      _id: new mongo.ObjectID(args.id)
+    });
+    return results.deletedCount;
+  },
+
+  // Delete a Task
+  deletetask: async args => {
+    let db = await rts.loadDB();
+    let results = await rts.deleteOne(db, "Tasks", {
       _id: new mongo.ObjectID(args.id)
     });
     return results.deletedCount;
