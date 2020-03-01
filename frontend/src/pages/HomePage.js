@@ -11,6 +11,7 @@ import {
   Typography
 } from "@material-ui/core";
 import theme from "../styles/theme";
+import ProjectComponent from "../pages/ProjectsComponent";
 
 function HomePage() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -26,7 +27,7 @@ function HomePage() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" color="inherit">
-            INFO3139 - MaterialUI
+            MemoryLeak
           </Typography>
           <IconButton
             onClick={handleClick}
@@ -44,6 +45,9 @@ function HomePage() {
             <MenuItem component={Link} to="/home" onClick={handleClose}>
               Home
             </MenuItem>
+            <MenuItem component={Link} to="/projects" onClick={handleClose}>
+              Projects
+            </MenuItem>
             <MenuItem component={Link} to="/users" onClick={handleClose}>
               Users
             </MenuItem>
@@ -53,6 +57,7 @@ function HomePage() {
       <div>
         <Route exact path="/" render={() => <Redirect to="/home" />} />
         <Route path="/users" render={() => <div>UsersComponent</div>} />
+        <Route path="/projects" render={() => <ProjectComponent/>} />
         <Route path="/home" component={() => <div>HomeComponent</div>} />
       </div>
     </MuiThemeProvider>
