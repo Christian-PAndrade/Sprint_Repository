@@ -8,7 +8,7 @@ const schema = buildSchema(`
         useradmin: [User],
 
         projects: [Project],
-        projectsbyname(name: String): Project,
+        projectbyname(name: String): Project,
         projectbyid(id: String): Project,
 
         boards: [Board],
@@ -26,7 +26,7 @@ const schema = buildSchema(`
         taskbyname(name: String): Task,
         taskbyid(id: String): Task,
         taskbystatus(status: String): [Task],
-        taskbysprint(sprint: String): [Task],
+        taskbyboard(boardid: String): [Task],
         taskbyus(userst: String): [Task],
         taskbyuser(userid: String): [Task],
 
@@ -45,23 +45,23 @@ const schema = buildSchema(`
 
         tvelocities: [TeamVelocity],
         tvelbyid(id: String): TeamVelocity,
-        tvelbyboard(boardId: String): [TeamVelocity],
+        tvelbyboard(boardid: String): [TeamVelocity],
     }
 
     type User {
-        id: String
+        _id: String
         username: String
         isAdmin: Boolean
         projectId: String
     }
 
     type Project {
-        id: String
+        _id: String
         name: String
     }
 
     type Board {
-        id: String
+        _id: String
         startDate: String
         endDate: String
         name: String
@@ -69,7 +69,7 @@ const schema = buildSchema(`
     }
 
     type UserStory {
-        id: String
+        _id: String
         name: String
         creationDate: String
         completionDate: String
@@ -81,7 +81,7 @@ const schema = buildSchema(`
     }
 
     type Task {
-        id: String
+        _id: String
         name: String
         creationDate: String
         completionDate: String
@@ -93,7 +93,7 @@ const schema = buildSchema(`
     }
 
     type UserEstimate {
-        id: String
+        _id: String
         userEstimation: Float
         actualValue: Float
         accuracy: Float
@@ -101,20 +101,20 @@ const schema = buildSchema(`
     }
 
     type TeamEstimate {
-        id: String
+        _id: String
         accuracy: Float
         teamEstimates_boardId: String
     }
 
     type UserVelocity {
-        id: String
+        _id: String
         velocity: Float
         userVelocity_userId: String
         userVelocity_boardId: String
     }
 
     type TeamVelocity {
-        id: String
+        _id: String
         velocity: Float
         teamVelocity_boardId: String
     }
