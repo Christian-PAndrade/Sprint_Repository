@@ -302,6 +302,7 @@ const resolvers = {
     let userStory = {
       name: args.name,
       creationDate: new Date(),
+      completionDate: null,
       status: args.status,
       estimate: args.estimate,
       hoursWorked: args.hoursWorked,
@@ -319,6 +320,7 @@ const resolvers = {
     let task = {
       name: args.name,
       creationDate: new Date(),
+      completionDate: null,
       status: args.status,
       estimate: args.estimate,
       task_sprint: new mongo.ObjectID(args.sprint),
@@ -420,7 +422,47 @@ const resolvers = {
     return results.deletedCount;
   },
 
+  // Delete User Estimates
+  deleteuestimate: async args => {
+    let db = await rts.loadDB();
+    let results = await rts.deleteOne(db, "UserEstimates", {
+      _id: new mongo.ObjectID(args.id)
+    });
+    return results.deletedCount;
+  },
+
+  // Delete Team Estimates
+  deletetestimate: async args => {
+    let db = await rts.loadDB();
+    let results = await rts.deleteOne(db, "TeamEstimates", {
+      _id: new mongo.ObjectID(args.id)
+    });
+    return results.deletedCount;
+  },
+
+  // Delete User Velocity
+  deleteuvelocity: async args => {
+    let db = await rts.loadDB();
+    let results = await rts.deleteOne(db, "UserVelocity", {
+      _id: new mongo.ObjectID(args.id)
+    });
+    return results.deletedCount;
+  },
+
+  // Delete Team Velocity
+  deletetvelocity: async args => {
+    let db = await rts.loadDB();
+    let results = await rts.deleteOne(db, "TeamVelocity", {
+      _id: new mongo.ObjectID(args.id)
+    });
+    return results.deletedCount;
+  },
+
+  //
   // Updates
+  //
+
+  // Update User
   updateuser: async args => {
     let db = await rts.loadDB();
     let newUser = {
@@ -438,6 +480,153 @@ const resolvers = {
       newUser
     );
     return results.value ? newUser : null;
+  },
+
+  // Update Project
+  updateproject: async args => {
+    let db = await rts.loadDB();
+    let newProject = {
+      name: args.name
+    };
+
+    let results = await rts.updateOne(
+      db,
+      "Projects",
+      {
+        _id: new mongo.ObjectID(args.id)
+      },
+      newProject
+    );
+    return results.value ? newProject : null;
+  },
+
+  // Update User Story
+  updateuserstory: async args => {
+    let db = await rts.loadDB();
+    let newUserStory = {
+      name: args.name,
+      creationDate: args.creationDate,
+      completionDate: args.completionDate,
+      status: args.status,
+      estimate: args.estimate,
+      hoursWorked: args.hoursWorked,
+      reestimate: args.reestimate,
+      userStory_boardId: new mongo.ObjectID(args.boardId)
+    };
+
+    let results = await rts.updateOne(
+      db,
+      "UserStories",
+      {
+        _id: new mongo.ObjectID(args.id)
+      },
+      newUserStory
+    );
+    return results.value ? newUserStory : null;
+  },
+
+  // Update Task
+  updatetask: async args => {
+    let db = await rts.loadDB();
+    let newTask = {
+      name: args.name,
+      creationDate: args.creationDate,
+      completionDate: args.completionDate,
+      status: args.status,
+      estimate: args.estimate,
+      task_sprint: new mongo.ObjectID(args.sprint),
+      task_userStoryId: new mongo.ObjectID(args.userstory),
+      task_assignedToId: new mongo.ObjectID(args.userassigned)
+    };
+
+    let results = await rts.updateOne(
+      db,
+      "Tasks",
+      {
+        _id: new mongo.ObjectID(args.id)
+      },
+      newTask
+    );
+    return results.value ? newTask : null;
+  },
+
+  // Update User Estimate
+  updateuestimate: async args => {
+    let db = await rts.loadDB();
+    let newUserEstimate = {
+      userEstimation: args.estimate,
+      actualValue: args.actual,
+      accuracy: args.accuracy,
+      userEstimates_boardId: new mongo.ObjectID(args.board)
+    };
+
+    let results = await rts.updateOne(
+      db,
+      "UserEstimates",
+      {
+        _id: new mongo.ObjectID(args.id)
+      },
+      newUserEstimate
+    );
+    return results.value ? newUserEstimate : null;
+  },
+
+  // Update Team Estimate
+  updatetestimate: async args => {
+    let db = await rts.loadDB();
+    let newTeamEstimate = {
+      accuracy: args.accuracy,
+      teamEstimates_boardId: new mongo.ObjectID(args.boardid)
+    };
+
+    let results = await rts.updateOne(
+      db,
+      "TeamEstimates",
+      {
+        _id: new mongo.ObjectID(args.id)
+      },
+      newTeamEstimate
+    );
+    return results.value ? newTeamEstimate : null;
+  },
+
+  // Update User Velocity
+  updateuvelocity: async args => {
+    let db = await rts.loadDB();
+    let newUserVelocity = {
+      velocity: args.velocity,
+      userVelocity_userId: new mongo.ObjectID(args.userid),
+      userVelocity_boardId: new mongo.ObjectID(args.boardid)
+    };
+
+    let results = await rts.updateOne(
+      db,
+      "UserVelocity",
+      {
+        _id: new mongo.ObjectID(args.id)
+      },
+      newUserVelocity
+    );
+    return results.value ? newUserVelocity : null;
+  },
+
+  // Update Team Velocity
+  updatetvelocity: async args => {
+    let db = await rts.loadDB();
+    let newTeamVelocity = {
+      velocity: args.velocity,
+      teamVelocity_boardId: new mongo.ObjectID(args.boardid)
+    };
+
+    let results = await rts.updateOne(
+      db,
+      "TeamVelocity",
+      {
+        _id: new mongo.ObjectID(args.id)
+      },
+      newTeamVelocity
+    );
+    return results.value ? newTeamVelocity : null;
   }
 };
 
