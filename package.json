@@ -27,7 +27,7 @@
     "eject": "react-scripts eject",
     "backend": "cd backend && nodemon app",
     "frontend": "yarn start",
-    "dev": "yarn frontend && yarn backend"
+    "dev": "concurrently --kill-others \"yarn frontend\"  \"yarn backend\""
   },
   "eslintConfig": {
     "extends": "react-app"
