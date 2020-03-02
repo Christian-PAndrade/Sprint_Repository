@@ -1,31 +1,55 @@
 import React, { useReducer } from "react";
-import { MuiThemeProvider } from "@material-ui/core/styles";
+import { MuiThemeProvider, makeStyles } from "@material-ui/core/styles";
 import {
   Card,
   CardHeader,
   CardContent,
   IconButton,
   Snackbar,
-  TextField
+  TextField,
+  Typography
 } from "@material-ui/core";
-import theme from "./theme";
+import theme from "../styles/theme";
 import "../App.css";
 import AddCircle from "@material-ui/icons/AddCircle";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
+
+const useStyles = makeStyles({
+  container: {
+    minWidth: 100,
+    maxWidth: 300,
+    minHeight: 1000,
+    maxHeight: 1000,
+    display: "grid",
+    justifyContent: "center"
+  },
+  textBox: {
+    display: "grid",
+    justifyContent: "center"
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 160
+  }
+});
 
 const UserComponent = () => {
+  const classes = useStyles();
   const initialState = {
     showMsg: false,
     snackbarMsg: "",
     name: "",
-    age: 0,
-    email: ""
+    isAdmin: false,
+    users: []
   };
 
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
 
   const onAddClicked = async () => {
-    let user = { name: state.name, age: state.age, email: state.email };
+    let user = { name: state.name, isAdmin: state.isAdmin };
     let userStr = JSON.stringify(user);
     let myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -41,8 +65,6 @@ const UserComponent = () => {
         showMsg: true,
         snackbarMsg: json.msg,
         name: "",
-        age: 0,
-        email: ""
       });
     } catch (error) {
       setState({ snackbarMsg: error.message, showMsg: true });
@@ -57,27 +79,35 @@ const UserComponent = () => {
     setState({ name: e.target.value });
   };
 
-  const handleAgeInput = e => {
-    let age = parseInt(e.target.value);
-    age > 0 ? setState({ age: age }) : setState({ age: 0 });
-  };
-
-  const handleEmailInput = e => {
-    setState({ email: e.target.value });
+  const handleAdminInput = e => {
+    let isAdmin = parseInt(e.target.value);
+    isAdmin == true ? setState({ isAdmin: isAdmin }) : setState({ isAdmin: false });
   };
 
   const emptyorundefined =
     state.name === undefined ||
     state.name === "" ||
     state.age === undefined ||
-    state.age === 0 ||
-    state.email === undefined ||
-    state.email === "";
+    state.isAdmin === false;
+
+
+    const inputLabel = React.useRef(null);
+    const [labelWidth, setLabelWidth] = React.useState(0);
+    React.useEffect(() => {
+      setLabelWidth(inputLabel.current.offsetWidth);
+    }, []);
+
+    const handleChange = name => event => {
+      setState({
+        ...state,
+        [name]: event.target.value
+      });
+    };
 
   return (
-    <MuiThemeProvider theme={theme}>
+    <MuiThemeProvider theme={theme} className={classes.container}>
       {" "}
-      <Card style={{ marginTop: "10%" }}>
+      <Card style={{ marginTop: "10%" }} className={classes.textBox}>
         {" "}
         <CardHeader
           title="Add A User"
@@ -93,17 +123,34 @@ const UserComponent = () => {
           />{" "}
           <br />{" "}
           <TextField
-            onChange={handleAgeInput}
-            helperText="Enter user's age here"
-            value={state.age}
+            onChange={handleAdminInput}
+            helperText="Is the user an admin?"
+            value={state.isAdmin}
           />{" "}
-          <br />{" "}
-          <TextField
-            onChange={handleEmailInput}
-            value={state.email}
-            helperText="Enter user's email here"
-          />{" "}
-          <br />{" "}
+          <br />
+          <br />
+          <Typography>Find a user in the system: </Typography>
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel ref={inputLabel} htmlFor="outlined-age-native-simple">
+              User Name
+            </InputLabel>
+            <Select
+              native
+              value={state.age}
+              onChange={handleChange("age")}
+              labelWidth={labelWidth}
+              inputProps={{
+                name: "age",
+                id: "outlined-age-native-simple"
+              }}
+            >
+              <option value="" />
+              <option value={10}>Ten</option>
+              <option value={20}>Twenty</option>
+              <option value={30}>Thirty</option>
+            </Select>
+          </FormControl>
+          <br /> <br />{" "}
           <IconButton
             color="secondary"
             style={{ marginTop: 50, float: "right" }}
@@ -112,7 +159,7 @@ const UserComponent = () => {
           >
             {" "}
             <AddCircle fontSize="large" />{" "}
-          </IconButton>{" "}
+          </IconButton>
           <Snackbar
             open={state.showMsg}
             message={state.snackbarMsg}

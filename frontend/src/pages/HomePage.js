@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 import theme from "../styles/theme";
 import ProjectComponent from "../pages/ProjectsComponent";
+import UserComponent from "./UserComponent";
 
 function HomePage() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -56,7 +57,7 @@ function HomePage() {
       </AppBar>
       <div>
         <Route exact path="/" render={() => <Redirect to="/home" />} />
-        <Route path="/users" render={() => <div>UsersComponent</div>} />
+        <Route path="/users" render={() => <UserComponent/>} />
         <Route path="/projects" render={() => <ProjectComponent/>} />
         <Route path="/home" component={() => <div>HomeComponent</div>} />
       </div>
