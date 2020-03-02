@@ -12,9 +12,7 @@ import {
 import theme from "../styles/theme";
 import "../App.css";
 import AddCircle from "@material-ui/icons/AddCircle";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const useStyles = makeStyles({
   container: {
@@ -47,6 +45,41 @@ const UserComponent = () => {
 
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
+
+  useEffect(() => {
+    fetchProjects();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const fetchProjects = async () => {
+    let myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    try {
+      setState({
+        contactServer: true,
+        snackBarMsg: "Attempting to load users from server..."
+      });
+
+      const query = `query{ users{name}}`;
+      const url = "http://localhost:5000/graphql";
+      const opts = {
+        method: "POST",
+        myHeaders,
+        body: JSON.stringify({ query })
+      };
+      let response = await fetch(url, opts);
+      let json = await response.json();
+      setState({
+        snackBarMsg: "User data loaded",
+        users: json.users,
+        contactServer: true
+      });
+    } catch (error) {
+      console.log(error);
+      setState({
+        msg: `Problem loading server data - ${error.message}`
+      });
+    }
+  };
 
   const onAddClicked = async () => {
     let user = { name: state.name, isAdmin: state.isAdmin };
@@ -90,20 +123,6 @@ const UserComponent = () => {
     state.age === undefined ||
     state.isAdmin === false;
 
-
-    const inputLabel = React.useRef(null);
-    const [labelWidth, setLabelWidth] = React.useState(0);
-    React.useEffect(() => {
-      setLabelWidth(inputLabel.current.offsetWidth);
-    }, []);
-
-    const handleChange = name => event => {
-      setState({
-        ...state,
-        [name]: event.target.value
-      });
-    };
-
   return (
     <MuiThemeProvider theme={theme} className={classes.container}>
       {" "}
@@ -129,27 +148,21 @@ const UserComponent = () => {
           />{" "}
           <br />
           <br />
-          <Typography>Find a user in the system: </Typography>
-          <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel ref={inputLabel} htmlFor="outlined-age-native-simple">
-              User Name
-            </InputLabel>
-            <Select
-              native
-              value={state.age}
-              onChange={handleChange("age")}
-              labelWidth={labelWidth}
-              inputProps={{
-                name: "age",
-                id: "outlined-age-native-simple"
-              }}
-            >
-              <option value="" />
-              <option value={10}>Ten</option>
-              <option value={20}>Twenty</option>
-              <option value={30}>Thirty</option>
-            </Select>
-          </FormControl>
+          <Typography>Find a project in the system: </Typography>
+          <Autocomplete
+            id="lab8users"
+            options={state.users.map(users => users.name)}
+            getOptionLabel={option => option}
+            style={{ width: 300 }}
+            renderInput={params => (
+              <TextField
+                {...params}
+                label="available fruits"
+                variant="outlined"
+                fullWidth
+              />
+            )}
+          />
           <br /> <br />{" "}
           <IconButton
             color="secondary"
