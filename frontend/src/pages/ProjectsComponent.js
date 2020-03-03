@@ -52,32 +52,30 @@ const ProjectComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const fetchProjects = async () => {
-    let myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
     try {
       setState({
-        contactServer: true,
+        showMsg: true,
         snackBarMsg: "Attempting to load users from server..."
       });
-      
-       const query = `query{ projects{name}}`;
-       const url = "http://localhost:5000/graphql";
-          const opts = {
-            method: "POST",
-            myHeaders,
-            body: JSON.stringify({query})
-          };
-          let response = await fetch(url, opts);
+    
+        let response = await fetch("http://localhost:5000/graphql", {
+          origin: "*",
+          method: "POST",
+          headers: { "Content-Type": "application/json; charset=utf-8" },
+          body: JSON.stringify({ query: `query{projects{_id,name}}` })
+        });
           let json = await response.json();
       setState({
+        showMsg: true,
         snackBarMsg: "Project data loaded",
-        projects: json.projects,
-        contactServer: true
+        projects: json.data.projects,
       });
+      console.log(json.data.Projects);
     } catch (error) {
       console.log(error);
       setState({
-        msg: `Problem loading server data - ${error.message}`
+        showMsg: true,
+        snackBarMsg: `Problem loading server data - ${error.message}`
       });
     }
   };
@@ -87,29 +85,31 @@ const ProjectComponent = () => {
     myHeaders.append("Content-Type", "application/json");
 
     try {        
-          const mutation = `mutation{ addproject(name: ${state.name})}`;
-          const url = "http://localhost:5000/graphql";
-          const opts = {
-            method: "POST",
-            myHeaders,
-            body: JSON.stringify(`mutation{ addproject (name: ${state.name})}`)
-          };
-          console.log(opts.body);
-          let response = await fetch(url, opts);
+        let response = await fetch("http://localhost:5000/graphql", {
+          origin: "*",
+          method: "POST",
+          headers: {
+             "Content-Type": "application/json; charset=utf-8"
+          },
+          body: JSON.stringify({ query: `mutation{ addproject(name: "${state.name}"){name}}`}),
+          });
           let json = await response.json();
           setState({
             showMsg: true,
             snackbarMsg: json.msg,
-            name: ""
+            name: "",
           });
         } catch (error) {
       setState({ snackbarMsg: error.message, showMsg: true });
     }
   };
 
-  const snackbarClose = () => {
-    setState({ showMsg: false });
-  };
+    const snackbarClose = () => {
+      setState({
+        showMsg: false,
+        snackBarMsg: `${state.name} added to the database!`
+      });
+    };
 
   const handleNameInput = e => {
     setState({ name: e.target.value });
@@ -139,15 +139,16 @@ const ProjectComponent = () => {
           />{" "}
           <br /> <br />
           <Typography>Find a project in the system: </Typography>
+          <br />
           <Autocomplete
-            id="lab8users"
-            options={state.projects.map(projects => projects.name)}
-            getOptionLabel={option => option}
+            id="projects"
+            options={state.projects.map(projects => projects)}
+            getOptionLabel={projects => projects.name}
             style={{ width: 300 }}
             renderInput={params => (
               <TextField
                 {...params}
-                label="available fruits"
+                label="current projects"
                 variant="outlined"
                 fullWidth
               />

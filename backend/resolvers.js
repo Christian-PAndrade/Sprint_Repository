@@ -278,7 +278,7 @@ const resolvers = {
   adduser: async args => {
     let db = await rts.loadDB();
     let user = {
-      username: args.name,
+      username: args.username,
       isAdmin: args.isAdmin,
       projectId: new mongo.ObjectID(args.projectId)
     };

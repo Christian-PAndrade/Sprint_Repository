@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useEffect } from "react";
 import { MuiThemeProvider, makeStyles } from "@material-ui/core/styles";
 import {
   Card,
@@ -40,6 +40,7 @@ const UserComponent = () => {
     snackbarMsg: "",
     name: "",
     isAdmin: false,
+    isAdminString: "",
     users: []
   };
 
@@ -51,47 +52,40 @@ const UserComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const fetchProjects = async () => {
-    let myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
     try {
       setState({
-        contactServer: true,
+        showMsg: true,
         snackBarMsg: "Attempting to load users from server..."
       });
-
-      const query = `query{ users{name}}`;
-      const url = "http://localhost:5000/graphql";
-      const opts = {
-        method: "POST",
-        myHeaders,
-        body: JSON.stringify({ query })
-      };
-      let response = await fetch(url, opts);
+       let response = await fetch("http://localhost:5000/graphql", {
+         origin: "*",
+         method: "POST",
+         headers: { "Content-Type": "application/json; charset=utf-8" },
+         body: JSON.stringify({ query: `query{ users{username}}` })
+       });
       let json = await response.json();
       setState({
         snackBarMsg: "User data loaded",
-        users: json.users,
-        contactServer: true
+        users: json.data.users,
+        showMsg: true
       });
     } catch (error) {
       console.log(error);
       setState({
-        msg: `Problem loading server data - ${error.message}`
+        snackBarMsg: `Problem loading server data - ${error.message}`
       });
     }
   };
 
   const onAddClicked = async () => {
-    let user = { name: state.name, isAdmin: state.isAdmin };
-    let userStr = JSON.stringify(user);
-    let myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
     try {
-      let response = await fetch("http://localhost:5000/users", {
+      let response = await fetch("http://localhost:5000/graphql", {
+        origin: "*",
         method: "POST",
-        headers: myHeaders,
-        body: userStr
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: `mutation{ adduser(username: "${state.name}", isAdmin: "${state.isAdmin}"){username,isAdmin}}`
+        }),
       });
       let json = await response.json();
       setState({
@@ -112,16 +106,23 @@ const UserComponent = () => {
     setState({ name: e.target.value });
   };
 
-  const handleAdminInput = e => {
-    let isAdmin = parseInt(e.target.value);
-    isAdmin == true ? setState({ isAdmin: isAdmin }) : setState({ isAdmin: false });
+  const handleAdminStringInput = e => {
+    setState({isAdminString: e.target.value});
+    handleAdminInput();
   };
+
+  const handleAdminInput = () => {
+    if (state.isAdminString === "True") {
+      setState({ isAdmin: true });
+    }
+    setState({ isAdmin: false });
+  }
 
   const emptyorundefined =
     state.name === undefined ||
     state.name === "" ||
-    state.age === undefined ||
-    state.isAdmin === false;
+    state.isAdminString === undefined ||
+    state.isAdminString === "";
 
   return (
     <MuiThemeProvider theme={theme} className={classes.container}>
@@ -142,22 +143,22 @@ const UserComponent = () => {
           />{" "}
           <br />{" "}
           <TextField
-            onChange={handleAdminInput}
+            onChange={handleAdminStringInput}
             helperText="Is the user an admin?"
-            value={state.isAdmin}
+            value={state.isAdminString}
           />{" "}
           <br />
           <br />
           <Typography>Find a project in the system: </Typography>
           <Autocomplete
-            id="lab8users"
-            options={state.users.map(users => users.name)}
-            getOptionLabel={option => option}
+            id="users"
+            options={state.users.map(users => users)}
+            getOptionLabel={users => users.username}
             style={{ width: 300 }}
             renderInput={params => (
               <TextField
                 {...params}
-                label="available fruits"
+                label="users in the system"
                 variant="outlined"
                 fullWidth
               />
