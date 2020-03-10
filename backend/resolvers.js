@@ -18,8 +18,12 @@ const resolvers = {
   usersbyproject: async args => {
     // load db, find user by project id
     let db = await rts.loadDB();
-    let o_id = new mongo.ObjectID(args.id);
-    return await rts.findAll(db, "Users", { projectId: o_id }, {});
+    return await rts.findAll(
+      db,
+      "Users",
+      { projectId: mongo.ObjectID.createFromHexString(args.id) },
+      {}
+    );
   },
   useradmin: async () => {
     // load db and find all admin users

@@ -1,21 +1,13 @@
 import React, { useReducer, useEffect } from "react";
 import { MuiThemeProvider, makeStyles } from "@material-ui/core/styles";
 import {
-  Button,
   Card,
   CardHeader,
   CardContent,
   IconButton,
   Snackbar,
   TextField,
-  Typography,
-  Table,
-  TableContainer,
-  TableHead,
-  TableBody,
-  TableCell,
-  TableRow,
-  Paper
+  Typography
 } from "@material-ui/core";
 import theme from "../styles/theme";
 import "../App.css";
@@ -48,8 +40,7 @@ const ProjectComponent = () => {
     snackbarMsg: "",
     name: "",
     projects: [],
-    usersByProject: [],
-    hasUserProjs: false
+    usersByProject: []
   };
 
   const reducer = (state, newState) => ({ ...state, ...newState });
@@ -136,17 +127,11 @@ const ProjectComponent = () => {
         })
       });
       let json = await response.json();
-      setState({
-        usersByProject: json.data.usersbyproject,
-        hasUserProjs: true
-      });
-      console.log(json.data.usersbyproject);
+      setState({ usersByProject: json.data.usersbyproject });
     } catch (error) {
       console.log(error);
     }
   };
-
-  const deleteUser = (event, value) => {};
 
   const emptyorundefined = state.name === undefined || state.name === "";
 
@@ -187,50 +172,6 @@ const ProjectComponent = () => {
               />
             )}
           />
-          {state.hasUserProjs && (
-            <>
-              <TableContainer style={{ marginTop: "3%" }} component={Paper}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell align="center">Username</TableCell>
-                      <TableCell align="center">Option</TableCell>
-                    </TableRow>
-                  </TableHead>
-
-                  <TableBody>
-                    {state.usersByProject.map(elem => (
-                      <TableRow key={++state.keyCount}>
-                        <TableCell>{elem.username}</TableCell>
-                        <TableCell>
-                          <Button
-                            variant="contained"
-                            style={{ backgroundColor: "#D50202" }}
-                            onClick={(event, value) => {
-                              deleteUser();
-                            }}
-                          >
-                            Delete
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <Button
-                style={{
-                  alignItems: "right",
-                  justifyContent: "right",
-                  backgroundColor: "#0005EA",
-                  color: "#ffffff",
-                  marginTop: "2%"
-                }}
-              >
-                Add User
-              </Button>
-            </>
-          )}
           <br />{" "}
           <IconButton
             color="secondary"
