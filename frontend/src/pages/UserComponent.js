@@ -127,7 +127,7 @@ const UserComponent = () => {
   return (
     <MuiThemeProvider theme={theme} className={classes.container}>
       {" "}
-      <Card style={{ marginTop: "10%" }} className={classes.textBox}>
+      <Card style={{ marginTop: "5%" }} className={classes.textBox}>
         {" "}
         <CardHeader
           title="Add A User"

@@ -13,6 +13,7 @@ import {
 import theme from "../styles/theme";
 import ProjectComponent from "../pages/ProjectsComponent";
 import UserComponent from "./UserComponent";
+import UserProjectsComponent from "./UserProjectsComponent";
 
 function HomePage() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -47,18 +48,18 @@ function HomePage() {
               Home
             </MenuItem>
             <MenuItem component={Link} to="/projects" onClick={handleClose}>
-              Projects
+              Add a Project
             </MenuItem>
             <MenuItem component={Link} to="/users" onClick={handleClose}>
-              Users
+              Add a User
             </MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
       <div>
         <Route exact path="/" render={() => <Redirect to="/home" />} />
-        <Route path="/users" render={() => <UserComponent/>} />
-        <Route path="/projects" render={() => <ProjectComponent/>} />
+        <Route path="/users" render={() => <UserComponent />} />
+        <Route path="/projects" render={() => <ProjectComponent />} />
         <Route path="/home" component={() => <div>HomeComponent</div>} />
       </div>
     </MuiThemeProvider>
