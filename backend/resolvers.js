@@ -284,7 +284,7 @@ const resolvers = {
     let user = {
       username: args.username,
       isAdmin: args.isAdmin,
-      projectId: new mongo.ObjectID(args.projectId)
+      //projectId: new mongo.ObjectID(args.projectId)
     };
     let results = await rts.addOne(db, "Users", user);
     return results.insertedCount === 1 ? user : null;

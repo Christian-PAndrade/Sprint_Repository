@@ -6,7 +6,6 @@ import {
   CardHeader,
   CardContent,
   IconButton,
-  Snackbar,
   TextField,
   Typography,
   Table,
@@ -26,26 +25,21 @@ const useStyles = makeStyles({
   container: {
     minWidth: 100,
     maxWidth: 300,
-    minHeight: 1000,
-    maxHeight: 1000,
-    display: "grid",
+    minHeight: 500,
+    maxHeight: 500,
+    display: "flex",
+    flexDirection: "row",
     justifyContent: "center"
   },
   textBox: {
     display: "grid",
     justifyContent: "center"
   },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 160
-  }
 });
 
 const ProjectComponent = () => {
   const classes = useStyles();
   const initialState = {
-    showMsg: false,
-    snackbarMsg: "",
     name: "",
     projects: [],
     usersByProject: [],
@@ -61,11 +55,6 @@ const ProjectComponent = () => {
   }, []);
   const fetchProjects = async () => {
     try {
-      setState({
-        showMsg: true,
-        snackBarMsg: "Attempting to load users from server..."
-      });
-
       let response = await fetch("http://localhost:5000/graphql", {
         origin: "*",
         method: "POST",
@@ -74,17 +63,11 @@ const ProjectComponent = () => {
       });
       let json = await response.json();
       setState({
-        showMsg: true,
-        snackBarMsg: "Project data loaded",
         projects: json.data.projects
       });
       console.log(json.data.projects);
     } catch (error) {
       console.log(error);
-      setState({
-        showMsg: true,
-        snackBarMsg: `Problem loading server data - ${error.message}`
-      });
     }
   };
 
@@ -105,20 +88,11 @@ const ProjectComponent = () => {
       });
       let json = await response.json();
       setState({
-        showMsg: true,
-        snackbarMsg: json.msg,
         name: ""
       });
     } catch (error) {
-      setState({ snackbarMsg: error.message, showMsg: true });
+      console.log(error);
     }
-  };
-
-  const snackbarClose = () => {
-    setState({
-      showMsg: false,
-      snackBarMsg: `${state.name} added to the database!`
-    });
   };
 
   const handleNameInput = e => {
@@ -153,7 +127,7 @@ const ProjectComponent = () => {
   return (
     <MuiThemeProvider theme={theme} className={classes.container}>
       {" "}
-      <Card style={{ marginTop: "10%" }} className={classes.textBox}>
+      <Card style={{ marginTop: "5%" }} className={classes.textBox}>
         {" "}
         <CardHeader
           title="Add A Project"
@@ -243,12 +217,6 @@ const ProjectComponent = () => {
           </IconButton>
         </CardContent>{" "}
       </Card>{" "}
-      <Snackbar
-        open={state.showMsg}
-        message={state.snackbarMsg}
-        autoHideDuration={4000}
-        onClose={snackbarClose}
-      />{" "}
     </MuiThemeProvider>
   );
 };

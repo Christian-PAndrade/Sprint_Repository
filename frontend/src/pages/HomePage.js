@@ -11,9 +11,8 @@ import {
   Typography
 } from "@material-ui/core";
 import theme from "../styles/theme";
-import ProjectComponent from "../pages/ProjectsComponent";
-import UserComponent from "./UserComponent";
-import UserProjectsComponent from "./UserProjectsComponent";
+import UserComponent from "../components/UserComponent";
+import CreatePage from "./CreatePage";
 
 function HomePage() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -48,7 +47,7 @@ function HomePage() {
               Home
             </MenuItem>
             <MenuItem component={Link} to="/projects" onClick={handleClose}>
-              Add a Project
+              Create a project
             </MenuItem>
             <MenuItem component={Link} to="/users" onClick={handleClose}>
               Add a User
@@ -59,7 +58,7 @@ function HomePage() {
       <div>
         <Route exact path="/" render={() => <Redirect to="/home" />} />
         <Route path="/users" render={() => <UserComponent />} />
-        <Route path="/projects" render={() => <ProjectComponent />} />
+        <Route path="/projects" render={() => <CreatePage />} />
         <Route path="/home" component={() => <div>HomeComponent</div>} />
       </div>
     </MuiThemeProvider>

@@ -5,7 +5,6 @@ import {
   CardHeader,
   CardContent,
   IconButton,
-  Snackbar,
   TextField,
   Typography
 } from "@material-ui/core";
@@ -20,7 +19,8 @@ const useStyles = makeStyles({
     maxWidth: 300,
     minHeight: 1000,
     maxHeight: 1000,
-    display: "grid",
+    display: "flex",
+    flexDirection: "row",
     justifyContent: "center"
   },
   textBox: {
@@ -36,8 +36,6 @@ const useStyles = makeStyles({
 const UserComponent = () => {
   const classes = useStyles();
   const initialState = {
-    showMsg: false,
-    snackbarMsg: "",
     name: "",
     isAdmin: false,
     isAdminString: "",
@@ -53,10 +51,6 @@ const UserComponent = () => {
   }, []);
   const fetchProjects = async () => {
     try {
-      setState({
-        showMsg: true,
-        snackBarMsg: "Attempting to load users from server..."
-      });
        let response = await fetch("http://localhost:5000/graphql", {
          origin: "*",
          method: "POST",
@@ -65,15 +59,10 @@ const UserComponent = () => {
        });
       let json = await response.json();
       setState({
-        snackBarMsg: "User data loaded",
         users: json.data.users,
-        showMsg: true
       });
     } catch (error) {
       console.log(error);
-      setState({
-        snackBarMsg: `Problem loading server data - ${error.message}`
-      });
     }
   };
 
@@ -84,22 +73,19 @@ const UserComponent = () => {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
-          query: `mutation{ adduser(username: "${state.name}", isAdmin: "${state.isAdmin}"){username,isAdmin}}`
+          query: `mutation{ adduser(username: "${state.name}", isAdmin: ${state.isAdmin}){username,isAdmin}}`
         }),
       });
+      console.log(
+        `mutation{ adduser(username: "${state.name}", isAdmin: "${state.isAdmin}"){username,isAdmin}}`
+      );
       let json = await response.json();
       setState({
-        showMsg: true,
-        snackbarMsg: json.msg,
         name: "",
       });
     } catch (error) {
-      setState({ snackbarMsg: error.message, showMsg: true });
+      console.log(error);
     }
-  };
-
-  const snackbarClose = () => {
-    setState({ showMsg: false });
   };
 
   const handleNameInput = e => {
@@ -108,11 +94,11 @@ const UserComponent = () => {
 
   const handleAdminStringInput = e => {
     setState({isAdminString: e.target.value});
-    handleAdminInput();
+    handleAdminInput(e);
   };
 
-  const handleAdminInput = () => {
-    if (state.isAdminString === "True") {
+  const handleAdminInput = e => {
+    if (e === "True") {
       setState({ isAdmin: true });
     }
     setState({ isAdmin: false });
@@ -174,12 +160,6 @@ const UserComponent = () => {
             {" "}
             <AddCircle fontSize="large" />{" "}
           </IconButton>
-          <Snackbar
-            open={state.showMsg}
-            message={state.snackbarMsg}
-            autoHideDuration={4000}
-            onClose={snackbarClose}
-          />{" "}
         </CardContent>{" "}
       </Card>{" "}
     </MuiThemeProvider>
