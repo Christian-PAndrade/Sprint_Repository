@@ -34,7 +34,7 @@ const useStyles = makeStyles({
   textBox: {
     display: "grid",
     justifyContent: "center"
-  },
+  }
 });
 
 const ProjectComponent = () => {
@@ -120,103 +120,33 @@ const ProjectComponent = () => {
     }
   };
 
-  const deleteUser = (event, value) => {};
-
   const emptyorundefined = state.name === undefined || state.name === "";
 
   return (
     <MuiThemeProvider theme={theme} className={classes.container}>
-      {" "}
       <Card style={{ marginTop: "5%" }} className={classes.textBox}>
-        {" "}
         <CardHeader
           title="Add A Project"
           color="inherit"
           style={{ textAlign: "center" }}
-        />{" "}
+        />
         <CardContent>
-          {" "}
           <TextField
             onChange={handleNameInput}
             helperText="Enter a project name here"
             value={state.name}
-          />{" "}
-          <br /> <br />
-          <Typography>Find a project in the system: </Typography>
-          <br />
-          <Autocomplete
-            id="projects"
-            options={state.projects.map(projects => projects)}
-            onChange={(event, value) => {
-              getProjectUsers(event, value);
-            }}
-            getOptionLabel={projects => projects.name}
-            style={{ width: 300 }}
-            renderInput={params => (
-              <TextField
-                {...params}
-                label="current projects"
-                variant="outlined"
-                fullWidth
-              />
-            )}
           />
-          {state.hasUserProjs && (
-            <>
-              <TableContainer style={{ marginTop: "3%" }} component={Paper}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell align="center">Username</TableCell>
-                      <TableCell align="center">Option</TableCell>
-                    </TableRow>
-                  </TableHead>
-
-                  <TableBody>
-                    {state.usersByProject.map(elem => (
-                      <TableRow key={++state.keyCount}>
-                        <TableCell>{elem.username}</TableCell>
-                        <TableCell>
-                          <Button
-                            variant="contained"
-                            style={{ backgroundColor: "#D50202" }}
-                            onClick={(event, value) => {
-                              deleteUser();
-                            }}
-                          >
-                            Delete
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <Button
-                style={{
-                  alignItems: "right",
-                  justifyContent: "right",
-                  backgroundColor: "#0005EA",
-                  color: "#ffffff",
-                  marginTop: "2%"
-                }}
-              >
-                Add User
-              </Button>
-            </>
-          )}
-          <br />{" "}
+          <br />
           <IconButton
             color="secondary"
             style={{ marginTop: 50, float: "right" }}
             onClick={onAddClicked}
             disabled={emptyorundefined}
           >
-            {" "}
-            <AddCircle fontSize="large" />{" "}
+            <AddCircle fontSize="large" />
           </IconButton>
-        </CardContent>{" "}
-      </Card>{" "}
+        </CardContent>
+      </Card>
     </MuiThemeProvider>
   );
 };
