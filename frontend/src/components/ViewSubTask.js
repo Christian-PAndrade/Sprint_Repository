@@ -5,12 +5,12 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const ViewSubTask = () => {
   const initialState = {
-    contactServer: false,
     tasks: [],
-    choice: {},
     value: "Traveller",
     task: {},
-    populate: false
+    sprintName: null,
+    userStoryName: null,
+    User: null
   };
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
@@ -20,11 +20,11 @@ const ViewSubTask = () => {
   }, []);
 
   const handleClick = value => {
-    setState({ choice: value });
-    fetchTasks(value);
+    fetchTask(value);
   };
 
   const fetchAllTasks = async () => {
+    console.log("fetchAllTasks");
     try {
       let response = await fetch("http://localhost:5000/graphql", {
         method: "POST",
@@ -46,8 +46,6 @@ const ViewSubTask = () => {
       let json = await response.json();
 
       setState({
-        contactServer: true,
-        populate: true,
         tasks: json.data.tasks
       });
     } catch (err) {
@@ -55,37 +53,121 @@ const ViewSubTask = () => {
     }
   };
 
-  const fetchTasks = async value => {
+  const fetchTask = async value => {
     try {
-      const query = `{ taskbyname(name: "${value}") {
-            _id
-            name
-            creationDate
-            completionDate
-            status
-            estimate
-            task_sprint
-            task_userStoryId
-            task_assignedToId
-          }}`;
+      if (value) {
+        const query = `{ taskbyname(name: "${value}") {
+          _id
+          name
+          creationDate
+          completionDate
+          status
+          estimate
+          task_sprint
+          task_userStoryId
+          task_assignedToId
+        }}`;
 
-      let response = await fetch("http://localhost:5000/graphql", {
-        method: "POST",
-        headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify({
-          query: query
-        })
-      });
-      let json = await response.json();
+        let response = await fetch("http://localhost:5000/graphql", {
+          method: "POST",
+          headers: { "Content-Type": "application/json; charset=utf-8" },
+          body: JSON.stringify({
+            query: query
+          })
+        });
+        let json = await response.json();
 
-      setState({
-        contactServer: true,
-        populate: true,
-        task: json.data.taskbyname
-      });
+        setState({
+          task: json.data.taskbyname
+        });
+
+        fetchAdditional(json.data.taskbyname);
+      } else {
+        setState({ task: {} });
+      }
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const fetchAdditional = async task => {
+    try {
+      // Get sprint name from id
+      const querySprint = `{boardbyid(id: "${task.task_sprint}") {
+        name
+      }}`;
+
+      let responseSprint = await fetch("http://localhost:5000/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: querySprint
+        })
+      });
+
+      let json = await responseSprint.json();
+      setState({ sprintName: json.data.boardbyid.name });
+
+      // Get UserStory name from id
+      const queryUserStory = `{usbyid(id: "${task.task_userStoryId}") {
+      name
+    }}`;
+
+      let responseUserStory = await fetch("http://localhost:5000/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: queryUserStory
+        })
+      });
+
+      let jsonUserStory = await responseUserStory.json();
+      setState({ userStoryName: jsonUserStory.data.usbyid.name });
+
+      // Get User from id
+      const queryUser = `{userbyid(id: "${task.task_assignedToId}") {
+      username
+    }}`;
+
+      let responseUser = await fetch("http://localhost:5000/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: queryUser
+        })
+      });
+
+      let jsonUser = await responseUser.json();
+      setState({ User: jsonUser.data.userbyid.username });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // makes a card for each task
+  const TaskCard = () => {
+    // Get User from id
+    return (
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
+          <p>Name: {state.task.name}</p>
+          <p>Status: {state.task.status}</p>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
+          <p>Created On: {state.task.creationDate}</p>
+          <p>Completed On: {state.task.completionDate}</p>
+        </div>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <p>Estimate: {state.task.estimate}</p>
+        </div>
+        <br />
+        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
+          <p>User Story: {state.userStoryName}</p>
+          <p>Sprint: {state.sprintName}</p>
+          <p>User Assigned: {state.User}</p>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -100,7 +182,7 @@ const ViewSubTask = () => {
           <TextField {...param} label="Tasks" variant="outlined" />
         )}
       />
-      {state.task && <div>{state.task.name}</div>}
+      {Object.keys(state.task).length > 0 && <TaskCard />}
     </div>
   );
 };
