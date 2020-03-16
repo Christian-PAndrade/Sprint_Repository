@@ -6,7 +6,6 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 const ViewSubTask = () => {
   const initialState = {
     tasks: [],
-    value: "Traveller",
     task: {},
     sprintName: null,
     userStoryName: null,
@@ -24,7 +23,6 @@ const ViewSubTask = () => {
   };
 
   const fetchAllTasks = async () => {
-    console.log("fetchAllTasks");
     try {
       let response = await fetch("http://localhost:5000/graphql", {
         method: "POST",
@@ -81,7 +79,7 @@ const ViewSubTask = () => {
           task: json.data.taskbyname
         });
 
-        fetchAdditional(json.data.taskbyname);
+        await fetchAdditional(json.data.taskbyname);
       } else {
         setState({ task: {} });
       }

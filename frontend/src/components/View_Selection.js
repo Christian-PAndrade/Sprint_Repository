@@ -14,6 +14,7 @@ import {
 } from "@material-ui/core";
 
 import ViewSubTask from "../components/ViewSubTask";
+import ViewUserStory from "../components/ViewUserStory";
 
 const ViewSelection = () => {
   const [radioSelected, setRadioSelected] = useState("projects");
@@ -26,7 +27,7 @@ const ViewSelection = () => {
     if (radioSelected === "projects") return <div>View Project</div>;
     if (radioSelected === "boards") return <div>View Boards</div>;
     if (radioSelected === "users") return <div>View Users</div>;
-    if (radioSelected === "userStories") return <div>View User Stories</div>;
+    if (radioSelected === "userStories") return <ViewUserStory />;
     else return <ViewSubTask />;
   };
 
