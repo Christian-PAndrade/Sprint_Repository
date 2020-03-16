@@ -2,7 +2,7 @@ import React from "react";
 import { MuiThemeProvider } from "@material-ui/core/styles";
 import theme from "../styles/theme";
 
-import ViewSelection from "../components/View_Selection";
+import ViewSelection from "../components/ViewPage/View_Selection";
 
 const ViewPage = () => {
   return (
