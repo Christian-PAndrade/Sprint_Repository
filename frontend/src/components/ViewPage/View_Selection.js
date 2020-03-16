@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { MuiThemeProvider } from "@material-ui/core";
-import theme from "../styles/theme";
+import theme from "../../styles/theme";
 import {
   Card,
   CardHeader,
@@ -13,7 +13,9 @@ import {
   RadioGroup
 } from "@material-ui/core";
 
-import ViewSubTask from "../components/ViewSubTask";
+import ViewSubTask from "./ViewSubTask";
+import ViewUserStory from "./ViewUserStory";
+import ViewUsers from "./ViewUsers";
 
 const ViewSelection = () => {
   const [radioSelected, setRadioSelected] = useState("projects");
@@ -25,8 +27,8 @@ const ViewSelection = () => {
   const RenderView = () => {
     if (radioSelected === "projects") return <div>View Project</div>;
     if (radioSelected === "boards") return <div>View Boards</div>;
-    if (radioSelected === "users") return <div>View Users</div>;
-    if (radioSelected === "userStories") return <div>View User Stories</div>;
+    if (radioSelected === "users") return <ViewUsers />;
+    if (radioSelected === "userStories") return <ViewUserStory />;
     else return <ViewSubTask />;
   };
 

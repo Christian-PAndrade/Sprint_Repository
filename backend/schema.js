@@ -4,6 +4,7 @@ const schema = buildSchema(`
     type Query {
         users: [User],
         userbyid(id: String): User,
+        userbyname(name: String): User,
         usersbyproject(id: String): [User],
         useradmin: [User],
 

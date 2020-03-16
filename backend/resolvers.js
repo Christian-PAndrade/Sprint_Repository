@@ -9,6 +9,11 @@ const resolvers = {
     let db = await rts.loadDB();
     return await rts.findAll(db, "Users", {}, {});
   },
+  userbyname: async args => {
+    // load db, find user by name
+    let db = await rts.loadDB();
+    return await rts.findOne(db, "Users", { username: args.name });
+  },
   userbyid: async args => {
     // load db, find user by id
     let db = await rts.loadDB();
@@ -283,7 +288,7 @@ const resolvers = {
     let db = await rts.loadDB();
     let user = {
       username: args.username,
-      isAdmin: args.isAdmin,
+      isAdmin: args.isAdmin
       //projectId: new mongo.ObjectID(args.projectId)
     };
     let results = await rts.addOne(db, "Users", user);
