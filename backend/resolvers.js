@@ -20,16 +20,6 @@ const resolvers = {
     let o_id = new mongo.ObjectID(args.id);
     return await rts.findOne(db, "Users", { _id: o_id });
   },
-  usersbyproject: async args => {
-    // load db, find user by project id
-    let db = await rts.loadDB();
-    return await rts.findAll(
-      db,
-      "Users",
-      { projectId: mongo.ObjectID.createFromHexString(args.id) },
-      {}
-    );
-  },
   useradmin: async () => {
     // load db and find all admin users
     let db = await rts.loadDB();
@@ -274,6 +264,27 @@ const resolvers = {
       db,
       "TeamVelocity",
       { teamVelocity_boardId: new mongo.ObjectID(args.boardid) },
+      {}
+    );
+  },
+  // UserProjectLookup
+  // Get all projects a user is part of
+  projectsbyuser: async args => {
+    let db = await rts.loadDB();
+    return await rts.findAll(
+      db,
+      "UserProjectLookup",
+      { lookupUserId: new mongo.ObjectID(args.userId) },
+      {}
+    );
+  },
+  // Get all users in a project
+  usersbyproject: async args => {
+    let db = await rts.loadDB();
+    return await rts.findAll(
+      db,
+      "UserProjectLookup",
+      { lookupProjectId: new mongo.ObjectID(args.projectId) },
       {}
     );
   },

@@ -5,7 +5,6 @@ const schema = buildSchema(`
         users: [User],
         userbyid(id: String): User,
         userbyname(name: String): User,
-        usersbyproject(id: String): [User],
         useradmin: [User],
 
         projects: [Project],
@@ -47,13 +46,15 @@ const schema = buildSchema(`
         tvelocities: [TeamVelocity],
         tvelbyid(id: String): TeamVelocity,
         tvelbyboard(boardid: String): [TeamVelocity],
+
+        projectsbyuser(userId: String): [UserProjectLookup],
+        usersbyproject(projectId: String): [UserProjectLookup],
     }
 
     type User {
         _id: String
         username: String
         isAdmin: Boolean
-        projectId: String
     }
 
     type Project {
@@ -120,6 +121,12 @@ const schema = buildSchema(`
         teamVelocity_boardId: String
     }
 
+    type UserProjectLookup {
+        _id: String
+        lookupUserId: String
+        lookupProjectId: String
+    }
+
     type Mutation {
         adduser(username: String, isAdmin: Boolean): User,
         addproject(name: String): Project,
@@ -129,6 +136,7 @@ const schema = buildSchema(`
         addtestimate(accuracy: Float, boardid: String) : TeamEstimate,
         adduvelocity(velocity: Float, userid: String, boardid: String): UserVelocity,
         addtvelocity(velocity: Float, boardid: String): TeamVelocity,
+        addUserToProject(userId: String, projectId: String): UserProjectLookup
 
         addboard(startDate: String, endDate: String, name: String, board_projectId: string): Board,
 
@@ -140,8 +148,9 @@ const schema = buildSchema(`
         deletetestimate(id: String): Int,
         deleteuvelocity(id: String): Int, 
         deletetvelocity(id: String): Int,
+        deleteUserFromProject(id: String): Int,
 
-        updateuser(id: String, name: String, isAdmin: Boolean, projectId: String): User,
+        updateuser(id: String, name: String, isAdmin: Boolean): User,
         updateproject(id: String, name: String): Project,
         updateuserstory(id: String, name: String, creationDate: String, completionDate: String, status: String, estimate: Float, hoursWorked: Float, reestimate: String, boarId: String): UserStory,
         updatetask(id: String, name: String, creationDate: String, completionDate: String, status: String, estimate: Float, sprint: String, userstory: String, userassigned: String): Task,
