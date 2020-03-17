@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer } from "react";
 import { MuiThemeProvider, makeStyles } from "@material-ui/core/styles";
 import {
   Card,
@@ -6,19 +6,17 @@ import {
   CardContent,
   IconButton,
   TextField,
-  Typography
 } from "@material-ui/core";
 import theme from "../styles/theme";
 import "../App.css";
 import AddCircle from "@material-ui/icons/AddCircle";
-import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const useStyles = makeStyles({
   container: {
     minWidth: 100,
     maxWidth: 300,
     minHeight: 1000,
-    maxHeight: 1000,
+    maxHeight: 1000,  
     display: "flex",
     flexDirection: "row",
     justifyContent: "center"
@@ -45,27 +43,6 @@ const UserComponent = () => {
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
 
-  useEffect(() => {
-    fetchProjects();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  const fetchProjects = async () => {
-    try {
-       let response = await fetch("http://localhost:5000/graphql", {
-         origin: "*",
-         method: "POST",
-         headers: { "Content-Type": "application/json; charset=utf-8" },
-         body: JSON.stringify({ query: `query{ users{username}}` })
-       });
-      let json = await response.json();
-      setState({
-        users: json.data.users,
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const onAddClicked = async () => {
     try {
       let response = await fetch("http://localhost:5000/graphql", {
@@ -77,11 +54,12 @@ const UserComponent = () => {
         }),
       });
       console.log(
-        `mutation{ adduser(username: "${state.name}", isAdmin: "${state.isAdmin}"){username,isAdmin}}`
+        `mutation{ adduser(username: "${state.name}", isAdmin: ${state.isAdmin}){username,isAdmin}}`
       );
       let json = await response.json();
       setState({
         name: "",
+        isAdminString: ""
       });
     } catch (error) {
       console.log(error);
@@ -93,16 +71,14 @@ const UserComponent = () => {
   };
 
   const handleAdminStringInput = e => {
+    console.log(e.target.value);
     setState({isAdminString: e.target.value});
-    handleAdminInput(e);
+      if (e.target.value === "True" || e.target.value === "true") {
+        setState({ isAdmin: true });
+      } else {
+        setState({ isAdmin: false });
+      }
   };
-
-  const handleAdminInput = e => {
-    if (e === "True") {
-      setState({ isAdmin: true });
-    }
-    setState({ isAdmin: false });
-  }
 
   const emptyorundefined =
     state.name === undefined ||
@@ -134,23 +110,6 @@ const UserComponent = () => {
             value={state.isAdminString}
           />{" "}
           <br />
-          <br />
-          <Typography>Find a project in the system: </Typography>
-          <Autocomplete
-            id="users"
-            options={state.users.map(users => users)}
-            getOptionLabel={users => users.username}
-            style={{ width: 300 }}
-            renderInput={params => (
-              <TextField
-                {...params}
-                label="users in the system"
-                variant="outlined"
-                fullWidth
-              />
-            )}
-          />
-          <br /> <br />{" "}
           <IconButton
             color="secondary"
             style={{ marginTop: 50, float: "right" }}

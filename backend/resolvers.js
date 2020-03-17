@@ -305,6 +305,19 @@ const resolvers = {
     return results.insertedCount === 1 ? project : null;
   },
 
+  addboard: async args => {
+    let db = await rts.loadDB();
+    let board = {
+      startDate: new Date(),
+      endDate: args.endDate,
+      name: args.name,
+      board_projectId: args.board_projectId
+    };
+
+    let results = await rts.addOne(db, "Boards", board);
+    return results.insertedCount === 1 ? board : null;
+  },
+
   // Add a user story
   adduserstory: async args => {
     let db = await rts.loadDB();
