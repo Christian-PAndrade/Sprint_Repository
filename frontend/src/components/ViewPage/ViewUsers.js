@@ -31,7 +31,6 @@ const ViewUsers = () => {
                 _id
                 username
                 isAdmin
-                projectId
               }}`
         })
       });
@@ -52,7 +51,6 @@ const ViewUsers = () => {
             _id
             username
             isAdmin
-            projectId
           } }`;
 
         let response = await fetch("http://localhost:5000/graphql", {
