@@ -95,7 +95,7 @@ const BoardComponent = () => {
       setState({
         name: "",
         projectID: "",
-        clear: true
+        clear: !state.clear
       });
     } catch (error) {
       console.log(error);
