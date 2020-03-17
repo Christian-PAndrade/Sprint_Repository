@@ -20,6 +20,16 @@ const resolvers = {
     let o_id = new mongo.ObjectID(args.id);
     return await rts.findOne(db, "Users", { _id: o_id });
   },
+  usersbyproject: async args => {
+    // load db, find user by project id
+    let db = await rts.loadDB();
+    return await rts.findAll(
+      db,
+      "UserProjectLookup",
+      { lookupProjectId: mongo.ObjectID.createFromHexString(args.id) },
+      {}
+    );
+  },
   useradmin: async () => {
     // load db and find all admin users
     let db = await rts.loadDB();
@@ -403,6 +413,18 @@ const resolvers = {
     return results.insertedCount === 1 ? teamVelocity : null;
   },
 
+  // Add User To Project
+  addusertoproject: async args => {
+    let db = await rts.loadDB();
+    let userToProject = {
+      lookupUserId: new mongo.ObjectID(args.userId),
+      lookupProjectId: new mongo.ObjectID(args.projectId)
+    };
+
+    let results = await trs.addOne(db, "UserProjectLookup", userToProject);
+    return results.insertedCount === 1 ? userToProject : null;
+  },
+
   //
   // Deletes
   //
@@ -474,6 +496,16 @@ const resolvers = {
     let db = await rts.loadDB();
     let results = await rts.deleteOne(db, "TeamVelocity", {
       _id: new mongo.ObjectID(args.id)
+    });
+    return results.deletedCount;
+  },
+
+  // Delete User From Project
+  deleteUserFromProject: async args => {
+    let db = await rts.loadDB();
+    let results = await rts.deleteOne(db, "UserProjectLookup", {
+      lookupUserId: mongo.ObjectID.createFromHexString(args.userId),
+      lookupProjectId: mongo.ObjectID.createFromHexString(args.projectId)
     });
     return results.deletedCount;
   },

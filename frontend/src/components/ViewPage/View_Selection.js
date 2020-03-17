@@ -16,6 +16,7 @@ import {
 import ViewSubTask from "./ViewSubTask";
 import ViewUserStory from "./ViewUserStory";
 import ViewUsers from "./ViewUsers";
+import ViewProject from "./ViewProject";
 
 const ViewSelection = () => {
   const [radioSelected, setRadioSelected] = useState("projects");
@@ -25,7 +26,7 @@ const ViewSelection = () => {
   };
 
   const RenderView = () => {
-    if (radioSelected === "projects") return <div>View Project</div>;
+    if (radioSelected === "projects") return <ViewProject />;
     if (radioSelected === "boards") return <div>View Boards</div>;
     if (radioSelected === "users") return <ViewUsers />;
     if (radioSelected === "userStories") return <ViewUserStory />;
