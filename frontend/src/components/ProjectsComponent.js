@@ -13,7 +13,7 @@ import AddCircle from "@material-ui/icons/AddCircle";
 
 const useStyles = makeStyles({
   container: {
-    minWidth: 100,
+    minWidth: 300,
     maxWidth: 300,
     minHeight: 500,
     maxHeight: 500,
@@ -23,7 +23,8 @@ const useStyles = makeStyles({
   },
   textBox: {
     display: "grid",
-    justifyContent: "center"
+    justifyContent: "center",
+    width: 350
   }
 });
 
@@ -81,7 +82,10 @@ const ProjectComponent = () => {
             helperText="Enter a project name here"
             value={state.name}
           />
-          <br /><br/>
+          <br /> <br />
+          <br /> <br />
+          <br /> <br />
+          <br />
           <IconButton
             color="secondary"
             style={{ marginTop: 50, float: "right" }}

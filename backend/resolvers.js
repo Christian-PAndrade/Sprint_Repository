@@ -319,8 +319,7 @@ const resolvers = {
   addboard: async args => {
     let db = await rts.loadDB();
     let board = {
-      startDate: new Date(),
-      endDate: args.endDate,
+      startDate: args.startDate,
       name: args.name,
       board_projectId: args.board_projectId
     };

@@ -33,8 +33,9 @@ const BoardComponent = () => {
   const classes = useStyles();
   const initialState = {
     name: "",
-    hasUserProjs: false,
-    projects: []
+    projects: [],
+    projectID: "",
+    clear: false
   };
 
   const reducer = (state, newState) => ({ ...state, ...newState });
@@ -56,7 +57,6 @@ const BoardComponent = () => {
       setState({
         projects: json.data.projects
       });
-      console.log(json.data.projects);
     } catch (error) {
       console.log(error);
     }
@@ -65,6 +65,20 @@ const BoardComponent = () => {
   const onAddClicked = async () => {
     let myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
+    var now = new Date();
+    var dateString =
+        now.getFullYear().toString() +
+        "-" +
+        ("0" + (now.getMonth() + 1)).slice(-2) +
+        "-" +
+        ("0" + now.getDate()).slice(-2) +
+        " " +
+        ("0" + now.getHours()).slice(-2) +
+        ":" +
+        ("0" + now.getMinutes()).slice(-2) +
+        ":" +
+        ("0" + now.getSeconds()).slice(-2);
+        console.log(dateString);
 
     try {
       let response = await fetch("http://localhost:5000/graphql", {
@@ -74,17 +88,27 @@ const BoardComponent = () => {
           "Content-Type": "application/json; charset=utf-8"
         },
         body: JSON.stringify({
-          query: `mutation{ addproject(name: "${state.name}"){name}}`
+          query: `mutation{ addboard(startDate: "${dateString}", name: "${state.name}", board_projectId: "${state.projectID}"){startDate, name, board_projectId}}`
         })
       });
       let json = await response.json();
       setState({
-        name: ""
+        name: "",
+        projectID: "",
+        clear: true
       });
     } catch (error) {
       console.log(error);
     }
   };
+
+    const getProjectID = async (e, v) => {
+      try {
+        setState({ projectID: v._id });
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
   const handleNameInput = e => {
     setState({ name: e.target.value });
@@ -110,11 +134,12 @@ const BoardComponent = () => {
           <Typography>Find a project in the system: </Typography>
           <br />
           <Autocomplete
+            key={state.clear}
             id="projects"
             options={state.projects.map(projects => projects)}
-           /* onChange={(event, value) => {
-              getProjectUsers(event, value);
-            }}*/
+           onChange={(event, value) => {
+              getProjectID(event, value);
+            }}
             getOptionLabel={projects => projects.name}
             style={{ width: 300 }}
             renderInput={params => (

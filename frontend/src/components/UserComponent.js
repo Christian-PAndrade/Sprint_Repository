@@ -23,12 +23,9 @@ const useStyles = makeStyles({
   },
   textBox: {
     display: "grid",
-    justifyContent: "center"
+    justifyContent: "center",
+    width: 350
   },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 160
-  }
 });
 
 const UserComponent = () => {
@@ -110,6 +107,8 @@ const UserComponent = () => {
             value={state.isAdminString}
           />{" "}
           <br />
+          <br /> <br />
+          <br /> <br />
           <IconButton
             color="secondary"
             style={{ marginTop: 50, float: "right" }}
