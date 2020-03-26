@@ -138,6 +138,8 @@ const schema = buildSchema(`
         addtvelocity(velocity: Float, boardid: String): TeamVelocity,
         addUserToProject(userId: String, projectId: String): UserProjectLookup
 
+        addboard(startDate: String, name: String, board_projectId: String): Board,
+
         deleteuser(id: String): Int,
         deleteproject(id: String): Int,
         deleteuserstory(id: String): Int,
