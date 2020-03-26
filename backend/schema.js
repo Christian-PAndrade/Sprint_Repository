@@ -148,7 +148,7 @@ const schema = buildSchema(`
         deletetestimate(id: String): Int,
         deleteuvelocity(id: String): Int, 
         deletetvelocity(id: String): Int,
-        deleteUserFromProject(id: String): Int,
+        deleteUserFromProject(userId: String, projectId: String): Int,
 
         updateuser(id: String, name: String, isAdmin: Boolean): User,
         updateproject(id: String, name: String): Project,
@@ -158,6 +158,7 @@ const schema = buildSchema(`
         updatetestimate(id: String, accuracy: Float, boardid: String) : TeamEstimate,
         updateuvelocity(id: String, velocity: Float, userid: String, boardid: String): UserVelocity,
         updatetvelocity(id: String, velocity: Float, boardid: String): TeamVelocity,
+        updateuserproject(id: String, userId: String, projectId: String): UserProjectLookup,
     }
 `);
 
