@@ -14,6 +14,7 @@ import theme from "../styles/theme";
 
 import CreatePage from "./CreatePage";
 import ViewPage from "./ViewPage";
+import UpdatePage from "./UpdatePage";
 
 function HomePage() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -53,6 +54,9 @@ function HomePage() {
             <MenuItem component={Link} to="/view" onClick={handleClose}>
               View
             </MenuItem>
+            <MenuItem component={Link} to="/update" onClick={handleClose}>
+              Update
+            </MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
@@ -60,6 +64,7 @@ function HomePage() {
         <Route exact path="/" render={() => <Redirect to="/home" />} />
         <Route path="/create" render={() => <CreatePage />} />
         <Route path="/view" render={() => <ViewPage />} />
+        <Route path="/update" render={() => <UpdatePage />} />
         <Route path="/home" component={() => <div>HomeComponent</div>} />
       </div>
     </MuiThemeProvider>

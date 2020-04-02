@@ -175,8 +175,16 @@ const ViewProject = () => {
                         <Table>
                           <TableHead>
                             <TableRow>
-                              <TableCell>User Name</TableCell>
-                              <TableCell>Option</TableCell>
+                              <TableCell
+                                style={{ fontWeight: "bold", fontSize: 17 }}
+                              >
+                                User Name
+                              </TableCell>
+                              <TableCell
+                                style={{ fontWeight: "bold", fontSize: 17 }}
+                              >
+                                Option
+                              </TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
@@ -215,8 +223,16 @@ const ViewProject = () => {
                         <Table>
                           <TableHead>
                             <TableRow>
-                              <TableCell>Board / Sprint</TableCell>
-                              <TableCell>Option</TableCell>
+                              <TableCell
+                                style={{ fontWeight: "bold", fontSize: 17 }}
+                              >
+                                Board / Sprint
+                              </TableCell>
+                              <TableCell
+                                style={{ fontWeight: "bold", fontSize: 17 }}
+                              >
+                                Option
+                              </TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>

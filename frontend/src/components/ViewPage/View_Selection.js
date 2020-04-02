@@ -17,6 +17,7 @@ import ViewSubTask from "./ViewSubTask";
 import ViewUserStory from "./ViewUserStory";
 import ViewUsers from "./ViewUsers";
 import ViewProject from "./ViewProject";
+import ViewBoards from "./ViewBoards";
 
 const ViewSelection = () => {
   const [radioSelected, setRadioSelected] = useState("projects");
@@ -27,7 +28,7 @@ const ViewSelection = () => {
 
   const RenderView = () => {
     if (radioSelected === "projects") return <ViewProject />;
-    if (radioSelected === "boards") return <div>View Boards</div>;
+    if (radioSelected === "boards") return <ViewBoards/>;
     if (radioSelected === "users") return <ViewUsers />;
     if (radioSelected === "userStories") return <ViewUserStory />;
     else return <ViewSubTask />;
@@ -36,7 +37,7 @@ const ViewSelection = () => {
   return (
     <MuiThemeProvider theme={theme}>
       <Card
-        style={{ marginTop: "5%", width: "90%" }}
+        style={{ marginTop: "5%", width: "95%" }}
         className={"CHANGE_ME_TOO"}
       >
         <CardHeader
