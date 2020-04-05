@@ -12,6 +12,7 @@ import theme from "../styles/theme";
 import "../App.css";
 import AddCircle from "@material-ui/icons/AddCircle";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import moment from "moment";
 
 const useStyles = makeStyles({
   container: {
@@ -65,20 +66,8 @@ const BoardComponent = () => {
   const onAddClicked = async () => {
     let myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    var now = new Date();
-    var dateString =
-        now.getFullYear().toString() +
-        "-" +
-        ("0" + (now.getMonth() + 1)).slice(-2) +
-        "-" +
-        ("0" + now.getDate()).slice(-2) +
-        " " +
-        ("0" + now.getHours()).slice(-2) +
-        ":" +
-        ("0" + now.getMinutes()).slice(-2) +
-        ":" +
-        ("0" + now.getSeconds()).slice(-2);
-        console.log(dateString);
+
+    const dateString = moment().format("YYYY-MM-DD");
 
     try {
       let response = await fetch("http://localhost:5000/graphql", {
@@ -102,13 +91,13 @@ const BoardComponent = () => {
     }
   };
 
-    const getProjectID = async (e, v) => {
-      try {
-        setState({ projectID: v._id });
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  const getProjectID = async (e, v) => {
+    try {
+      setState({ projectID: v._id });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleNameInput = e => {
     setState({ name: e.target.value });
@@ -137,7 +126,7 @@ const BoardComponent = () => {
             key={state.clear}
             id="projects"
             options={state.projects.map(projects => projects)}
-           onChange={(event, value) => {
+            onChange={(event, value) => {
               getProjectID(event, value);
             }}
             getOptionLabel={projects => projects.name}

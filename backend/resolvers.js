@@ -1,5 +1,6 @@
 const rts = require("./routines");
 const mongo = require("mongodb");
+const moment = require("moment");
 
 const resolvers = {
   // Queries
@@ -20,16 +21,16 @@ const resolvers = {
     let o_id = new mongo.ObjectID(args.id);
     return await rts.findOne(db, "Users", { _id: o_id });
   },
-  usersbyproject: async args => {
-    // load db, find user by project id
-    let db = await rts.loadDB();
-    return await rts.findAll(
-      db,
-      "UserProjectLookup",
-      { lookupProjectId: mongo.ObjectID.createFromHexString(args.id) },
-      {}
-    );
-  },
+  // usersbyproject: async args => {
+  //   // load db, find user by project id
+  //   let db = await rts.loadDB();
+  //   return await rts.findAll(
+  //     db,
+  //     "UserProjectLookup",
+  //     { lookupProjectId: mongo.ObjectID.createFromHexString(args.id) },
+  //     {}
+  //   );
+  // },
   useradmin: async () => {
     // load db and find all admin users
     let db = await rts.loadDB();
@@ -343,7 +344,7 @@ const resolvers = {
     let db = await rts.loadDB();
     let userStory = {
       name: args.name,
-      creationDate: new Date(),
+      creationDate: moment().format("YYYY-MM-DD"),
       completionDate: null,
       status: args.status,
       estimate: args.estimate,
@@ -361,7 +362,7 @@ const resolvers = {
     let db = await rts.loadDB();
     let task = {
       name: args.name,
-      creationDate: new Date(),
+      creationDate: moment().format("YYYY-MM-DD"),
       completionDate: null,
       status: args.status,
       estimate: args.estimate,
@@ -433,7 +434,7 @@ const resolvers = {
       lookupProjectId: new mongo.ObjectID(args.projectId)
     };
 
-    let results = await trs.addOne(db, "UserProjectLookup", userToProject);
+    let results = await rts.addOne(db, "UserProjectLookup", userToProject);
     return results.insertedCount === 1 ? userToProject : null;
   },
 
