@@ -1,6 +1,15 @@
 import React, { useReducer, useEffect } from "react";
-
-import { TextField } from "@material-ui/core";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  Table,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField
+} from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const ViewUsers = () => {
@@ -77,14 +86,33 @@ const ViewUsers = () => {
 
   const UserInfo = () => {
     return (
-      <div>
-        <p>Name: {state.user.username}</p>
-        <p>IsAdmin: {state.user.isAdmin ? "true" : "false"}</p>
-        <br />
-      </div>
+      <Card style={{ width: "60%" }}>
+        <CardHeader title="User" />
+        <CardContent>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    Name:
+                  </TableCell>
+                  <TableCell>{state.user.username}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    Is user Admin:
+                  </TableCell>
+                  <TableCell>{state.user.isAdmin ? "true" : "false"}</TableCell>
+                </TableRow>
+              </TableHead>
+            </Table>
+          </TableContainer>
+        </CardContent>
+      </Card>
     );
   };
 
+  // what's happening here?
   const Projects = () => {
     return (
       <div>

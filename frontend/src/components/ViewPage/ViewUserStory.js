@@ -1,6 +1,19 @@
 import React, { useReducer, useEffect } from "react";
-
-import { TextField } from "@material-ui/core";
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardContent,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  MuiThemeProvider,
+  TextField
+} from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const ViewUserStory = () => {
@@ -119,37 +132,75 @@ const ViewUserStory = () => {
 
   const UserStory = () => {
     return (
-      <div>
-        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
-          <p>Name: {state.userStory.name}</p>
-          <p>Status: {state.userStory.status}</p>
-        </div>
-        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
-          <p>Created On: {state.userStory.creationDate}</p>
-          <p>Completed On: {state.userStory.completionDate}</p>
-        </div>
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <p>Estimate: {state.userStory.estimate}</p>
-        </div>
-        <br />
-        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
-          <p>Sprint: {state.sprintName}</p>
-        </div>
-      </div>
+      <Card>
+        <CardHeader title="User Story" />
+        <CardContent>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    Name:
+                  </TableCell>
+                  <TableCell>{state.userStory.name}</TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    Status:
+                  </TableCell>
+                  <TableCell>{state.userStory.status}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    Created On:
+                  </TableCell>
+                  <TableCell>{state.userStory.creationDate}</TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    Completed On:
+                  </TableCell>
+                  <TableCell>{state.userStory.completionDate}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    Estimate:
+                  </TableCell>
+                  <TableCell>{state.userStory.estimate}</TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    Sprint:
+                  </TableCell>
+                  <TableCell>{state.sprintName}</TableCell>
+                </TableRow>
+              </TableHead>
+            </Table>
+          </TableContainer>
+        </CardContent>
+      </Card>
     );
   };
 
   const Tasks = () => {
     return (
-      <div>
-        {state.tasks.map(task => (
-          <div key={Math.random()}>
-            <p>Task Name: {task.name}</p>
-            <p>Status: {task.status}</p>
-            <br />
-          </div>
-        ))}
-      </div>
+      <Card>
+        <CardHeader title="Tasks" />
+        <CardContent>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                {state.tasks.map(task => (
+                  <TableRow key={Math.random()}>
+                    <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                      Task Name:
+                    </TableCell>
+                    <TableCell>{task.name}</TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                      Status:
+                    </TableCell>
+                    <TableCell>{task.status}</TableCell>
+                  </TableRow>
+                ))}
+              </TableHead>
+            </Table>
+          </TableContainer>
+        </CardContent>
+      </Card>
     );
   };
 

@@ -1,6 +1,15 @@
 import React, { useReducer, useEffect } from "react";
-
-import { TextField } from "@material-ui/core";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  Table,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField
+} from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const ViewSubTask = () => {
@@ -146,25 +155,57 @@ const ViewSubTask = () => {
   const TaskCard = () => {
     // Get User from id
     return (
-      <div>
-        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
-          <p>Name: {state.task.name}</p>
-          <p>Status: {state.task.status}</p>
-        </div>
-        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
-          <p>Created On: {state.task.creationDate}</p>
-          <p>Completed On: {state.task.completionDate}</p>
-        </div>
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <p>Estimate: {state.task.estimate}</p>
-        </div>
-        <br />
-        <div style={{ display: "flex", justifyContent: "space-evenly" }}>
-          <p>User Story: {state.userStoryName}</p>
-          <p>Sprint: {state.sprintName}</p>
-          <p>User Assigned: {state.User}</p>
-        </div>
-      </div>
+      <Card>
+        <CardHeader title="Tasks" />
+        <CardContent>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    Name:
+                  </TableCell>
+                  <TableCell>{state.task.name}</TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    Status:
+                  </TableCell>
+                  <TableCell>{state.task.status}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    Created On:
+                  </TableCell>
+                  <TableCell>{state.task.creationDate}</TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    Completed On:
+                  </TableCell>
+                  <TableCell>{state.task.completionDate}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    Estimate:
+                  </TableCell>
+                  <TableCell>{state.task.estimate}</TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    User Story:
+                  </TableCell>
+                  <TableCell>{state.userStoryName}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    Sprint:
+                  </TableCell>
+                  <TableCell>{state.sprintName}</TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    User Assigned:
+                  </TableCell>
+                  <TableCell>{state.User}</TableCell>
+                </TableRow>
+              </TableHead>
+            </Table>
+          </TableContainer>
+        </CardContent>
+      </Card>
     );
   };
 

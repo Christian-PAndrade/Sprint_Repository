@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { MuiThemeProvider } from "@material-ui/core";
+import React, { useReducer, useEffect, useState } from "react";
+import { MuiThemeProvider, RadioGroup, Radio } from "@material-ui/core";
 import theme from "../../styles/theme";
 import {
   Card,
@@ -9,29 +9,28 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
-  Radio,
-  RadioGroup
+  TextField,
 } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import UpdateProject from "./UpdateProject";
+import UpdateBoards from "./UpdateBoards";
+import UpdateUsers from "./UpdateUsers";
+import UpdateUserStory from "./UpdateUserStory";
+import UpdateSubTask from "./UpdateSubTask";
 
-import ViewSubTask from "./ViewSubTask";
-import ViewUserStory from "./ViewUserStory";
-import ViewUsers from "./ViewUsers";
-import ViewProject from "./ViewProject";
-import ViewBoards from "./ViewBoards";
-
-const ViewSelection = () => {
+const UpdateSelection = () => {
   const [radioSelected, setRadioSelected] = useState("projects");
 
-  const handleRadioSelection = e => {
+  const handleRadioSelection = (e) => {
     setRadioSelected(e.target.value);
   };
 
-  const RenderView = () => {
-    if (radioSelected === "projects") return <ViewProject />;
-    if (radioSelected === "boards") return <ViewBoards/>;
-    if (radioSelected === "users") return <ViewUsers />;
-    if (radioSelected === "userStories") return <ViewUserStory />;
-    else return <ViewSubTask />;
+  const RenderUpdate = () => {
+    if (radioSelected === "projects") return <UpdateProject />;
+    if (radioSelected === "boards") return <UpdateBoards />;
+    if (radioSelected === "users") return <UpdateUsers />;
+    if (radioSelected === "userStories") return <UpdateUserStory />;
+    else return <UpdateSubTask />;
   };
 
   return (
@@ -41,7 +40,7 @@ const ViewSelection = () => {
         className={"CHANGE_ME_TOO"}
       >
         <CardHeader
-          title="View Information"
+          title="Update A Project"
           color="inherit"
           style={{ textAlign: "center" }}
         />
@@ -49,7 +48,7 @@ const ViewSelection = () => {
           style={{
             display: "grid",
             gridTemplateColumns: "25% 75%",
-            gridTemplateRows: "auto"
+            gridTemplateRows: "auto",
           }}
         >
           <div>
@@ -91,11 +90,11 @@ const ViewSelection = () => {
               </RadioGroup>
             </FormControl>
           </div>
-          <RenderView />
+          <RenderUpdate />
         </CardContent>
       </Card>
     </MuiThemeProvider>
   );
 };
 
-export default ViewSelection;
+export default UpdateSelection;

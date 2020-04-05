@@ -12,13 +12,13 @@ import {
   TableHead,
   TableRow,
   Paper,
-  MuiThemeProvider
+  MuiThemeProvider,
 } from "@material-ui/core";
 
 const ViewProject = () => {
   const initialState = {
     projects: [],
-    tableKey: false
+    tableKey: false,
   };
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
@@ -34,8 +34,8 @@ const ViewProject = () => {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
-          query: "{projects{_id, name}}"
-        })
+          query: "{projects{_id, name}}",
+        }),
       });
       let json = await response.json();
       let allProjectData = [];
@@ -43,18 +43,18 @@ const ViewProject = () => {
       for (let i = 0; i < json.data.projects.length; i++) {
         let element = json.data.projects[i];
         let userResponse = [];
-        await getProjectUsers(null, element).then(value => {
+        await getProjectUsers(null, element).then((value) => {
           userResponse = value;
         });
         let boardResponse = [];
-        await getProjectBoards(element).then(value => {
+        await getProjectBoards(element).then((value) => {
           boardResponse = value;
         });
         allProjectData.push({
           _id: element._id,
           name: element.name,
           users: userResponse,
-          boards: boardResponse
+          boards: boardResponse,
         });
       }
 
@@ -64,15 +64,15 @@ const ViewProject = () => {
     }
   };
 
-  const getProjectBoards = async value => {
+  const getProjectBoards = async (value) => {
     try {
       let response = await fetch("http://localhost:5000/graphql", {
         origin: "*",
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
-          query: `{boardbyproj(projid:\"${value._id}\"){_id,startDate,endDate,name, board_projectId}}`
-        })
+          query: `{boardbyproj(projid:\"${value._id}\"){_id,startDate,endDate,name, board_projectId}}`,
+        }),
       });
       let json = await response.json();
       return json.data.boardbyproj;
@@ -88,8 +88,8 @@ const ViewProject = () => {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
-          query: `{usersbyproject(projectId:\"${v._id}\"){_id,lookupUserId,lookupProjectId}}`
-        })
+          query: `{usersbyproject(projectId:\"${v._id}\"){_id,lookupUserId,lookupProjectId}}`,
+        }),
       });
       let json = await response.json();
       let usersForProject = [];
@@ -100,8 +100,8 @@ const ViewProject = () => {
           method: "POST",
           headers: { "Content-Type": "application/json; charset=utf-8" },
           body: JSON.stringify({
-            query: `{userbyid(id:\"${json.data.usersbyproject[i].lookupUserId}\"){_id,username,isAdmin}}`
-          })
+            query: `{userbyid(id:\"${json.data.usersbyproject[i].lookupUserId}\"){_id,username,isAdmin}}`,
+          }),
         });
 
         let userJson = await userResponse.json();
@@ -124,8 +124,8 @@ const ViewProject = () => {
           query: `mutation{deleteUserFromProject(
                 userId:\"${user._id}\",
                 projectId: \"${projId}\")
-              }`
-        })
+              }`,
+        }),
       });
       let json = await response.json();
       let allProjectsData = [];
@@ -141,7 +141,7 @@ const ViewProject = () => {
           _id: state.projects[i]._id,
           name: state.projects[i].name,
           users: usersForProject,
-          boards: state.projects[i].boards
+          boards: state.projects[i].boards,
         });
         usersForProject = [];
       }
@@ -165,7 +165,7 @@ const ViewProject = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {state.projects.map(proj => (
+            {state.projects.map((proj) => (
               <TableRow key={proj.name}>
                 <TableCell>
                   <Card>
@@ -175,12 +175,20 @@ const ViewProject = () => {
                         <Table>
                           <TableHead>
                             <TableRow>
-                              <TableCell>User Name</TableCell>
-                              <TableCell>Option</TableCell>
+                              <TableCell
+                                style={{ fontWeight: "bold", fontSize: 17 }}
+                              >
+                                User Name
+                              </TableCell>
+                              <TableCell
+                                style={{ fontWeight: "bold", fontSize: 17 }}
+                              >
+                                Option
+                              </TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
-                            {proj.users.map(user => (
+                            {proj.users.map((user) => (
                               <TableRow key={user.username}>
                                 <TableCell>{user.username}</TableCell>
                                 <TableCell key={user.username}>
@@ -193,7 +201,7 @@ const ViewProject = () => {
                                     }}
                                     style={{
                                       backgroundColor: "#FF0000",
-                                      fontWeight: "bold"
+                                      fontWeight: "bold",
                                     }}
                                   >
                                     Delete
@@ -215,12 +223,20 @@ const ViewProject = () => {
                         <Table>
                           <TableHead>
                             <TableRow>
-                              <TableCell>Board / Sprint</TableCell>
-                              <TableCell>Option</TableCell>
+                              <TableCell
+                                style={{ fontWeight: "bold", fontSize: 17 }}
+                              >
+                                Board / Sprint
+                              </TableCell>
+                              <TableCell
+                                style={{ fontWeight: "bold", fontSize: 17 }}
+                              >
+                                Option
+                              </TableCell>
                             </TableRow>
                           </TableHead>
                           <TableBody>
-                            {proj.boards.map(board => (
+                            {proj.boards.map((board) => (
                               <TableRow key={board.name}>
                                 <TableCell>{board.name}</TableCell>
                                 <TableCell>
@@ -228,7 +244,7 @@ const ViewProject = () => {
                                     variant="contained"
                                     style={{
                                       backgroundColor: "#FF0000",
-                                      fontWeight: "bold"
+                                      fontWeight: "bold",
                                     }}
                                   >
                                     Delete
