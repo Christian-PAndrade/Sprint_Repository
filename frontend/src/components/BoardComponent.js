@@ -1,4 +1,5 @@
 import React, { useReducer, useEffect } from "react";
+import moment from "moment";
 import { MuiThemeProvider, makeStyles } from "@material-ui/core/styles";
 import {
   Card,
@@ -6,7 +7,7 @@ import {
   CardContent,
   IconButton,
   TextField,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import theme from "../styles/theme";
 import "../App.css";
@@ -21,12 +22,12 @@ const useStyles = makeStyles({
     maxHeight: 500,
     display: "flex",
     flexDirection: "row",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   textBox: {
     display: "grid",
-    justifyContent: "center"
-  }
+    justifyContent: "center",
+  },
 });
 
 const BoardComponent = () => {
@@ -35,7 +36,7 @@ const BoardComponent = () => {
     name: "",
     projects: [],
     projectID: "",
-    clear: false
+    clear: false,
   };
 
   const reducer = (state, newState) => ({ ...state, ...newState });
@@ -51,11 +52,11 @@ const BoardComponent = () => {
         origin: "*",
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify({ query: `query{projects{_id,name}}` })
+        body: JSON.stringify({ query: `query{projects{_id,name}}` }),
       });
       let json = await response.json();
       setState({
-        projects: json.data.projects
+        projects: json.data.projects,
       });
     } catch (error) {
       console.log(error);
@@ -65,52 +66,53 @@ const BoardComponent = () => {
   const onAddClicked = async () => {
     let myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    var now = new Date();
-    var dateString =
-        now.getFullYear().toString() +
-        "-" +
-        ("0" + (now.getMonth() + 1)).slice(-2) +
-        "-" +
-        ("0" + now.getDate()).slice(-2) +
-        " " +
-        ("0" + now.getHours()).slice(-2) +
-        ":" +
-        ("0" + now.getMinutes()).slice(-2) +
-        ":" +
-        ("0" + now.getSeconds()).slice(-2);
-        console.log(dateString);
+    // var now = new Date();
+    // var dateString =
+    //     now.getFullYear().toString() +
+    //     "-" +
+    //     ("0" + (now.getMonth() + 1)).slice(-2) +
+    //     "-" +
+    //     ("0" + now.getDate()).slice(-2) +
+    //     " " +
+    //     ("0" + now.getHours()).slice(-2) +
+    //     ":" +
+    //     ("0" + now.getMinutes()).slice(-2) +
+    //     ":" +
+    //     ("0" + now.getSeconds()).slice(-2);
+    //     console.log(dateString);
+    const dateString = moment().format("YYYY-MM-DD");
 
     try {
       let response = await fetch("http://localhost:5000/graphql", {
         origin: "*",
         method: "POST",
         headers: {
-          "Content-Type": "application/json; charset=utf-8"
+          "Content-Type": "application/json; charset=utf-8",
         },
         body: JSON.stringify({
-          query: `mutation{ addboard(startDate: "${dateString}", name: "${state.name}", board_projectId: "${state.projectID}"){startDate, name, board_projectId}}`
-        })
+          query: `mutation{ addboard(startDate: "${dateString}", name: "${state.name}", board_projectId: "${state.projectID}"){startDate, name, board_projectId}}`,
+        }),
       });
       let json = await response.json();
       setState({
         name: "",
         projectID: "",
-        clear: !state.clear
+        clear: !state.clear,
       });
     } catch (error) {
       console.log(error);
     }
   };
 
-    const getProjectID = async (e, v) => {
-      try {
-        setState({ projectID: v._id });
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  const getProjectID = async (e, v) => {
+    try {
+      setState({ projectID: v._id });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  const handleNameInput = e => {
+  const handleNameInput = (e) => {
     setState({ name: e.target.value });
   };
 
@@ -136,13 +138,13 @@ const BoardComponent = () => {
           <Autocomplete
             key={state.clear}
             id="projects"
-            options={state.projects.map(projects => projects)}
-           onChange={(event, value) => {
+            options={state.projects.map((projects) => projects)}
+            onChange={(event, value) => {
               getProjectID(event, value);
             }}
-            getOptionLabel={projects => projects.name}
+            getOptionLabel={(projects) => projects.name}
             style={{ width: 300 }}
-            renderInput={params => (
+            renderInput={(params) => (
               <TextField
                 {...params}
                 label="current projects"

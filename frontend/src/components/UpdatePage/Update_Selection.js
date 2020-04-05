@@ -1,5 +1,5 @@
 import React, { useReducer, useEffect, useState } from "react";
-import { MuiThemeProvider } from "@material-ui/core";
+import { MuiThemeProvider, RadioGroup, Radio } from "@material-ui/core";
 import theme from "../../styles/theme";
 import {
   Card,
@@ -9,123 +9,92 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
-  TextField
+  TextField,
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import UpdateProject from "./UpdateProject";
+import UpdateBoards from "./UpdateBoards";
+import UpdateUsers from "./UpdateUsers";
+import UpdateUserStory from "./UpdateUserStory";
+import UpdateSubTask from "./UpdateSubTask";
 
 const UpdateSelection = () => {
- const initialState = {
-   boards: [],
-   projectName: null,
-   projects: [],
-   displayBoard: false
- };
- const reducer = (state, newState) => ({ ...state, ...newState });
- const [state, setState] = useReducer(reducer, initialState);
+  const [radioSelected, setRadioSelected] = useState("projects");
 
- useEffect(() => {
-   fetchAllProjects();
- }, []);
+  const handleRadioSelection = (e) => {
+    setRadioSelected(e.target.value);
+  };
 
- const handleClick = value => {
-   fetchBoards(value);
- };
+  const RenderUpdate = () => {
+    if (radioSelected === "projects") return <UpdateProject />;
+    if (radioSelected === "boards") return <UpdateBoards />;
+    if (radioSelected === "users") return <UpdateUsers />;
+    if (radioSelected === "userStories") return <UpdateUserStory />;
+    else return <UpdateSubTask />;
+  };
 
- const handleBoardClick = value => {
-
- }
-
- const fetchAllProjects = async () => {
-   try {
-     let response = await fetch("http://localhost:5000/graphql", {
-       origin: "*",
-       method: "POST",
-       headers: { "Content-Type": "application/json; charset=utf-8" },
-       body: JSON.stringify({
-         query: "{projects{_id, name}}"
-       })
-     });
-     let json = await response.json();
-     setState({projects: json.data.projects})
-   } catch (error) {
-     console.log(error);
-   }
- };
-
-const fetchBoards = async proj =>{
-     try {
-       let response = await fetch("http://localhost:5000/graphql", {
-         origin: "*",
-         method: "POST",
-         headers: { "Content-Type": "application/json; charset=utf-8" },
-         body: JSON.stringify({
-           query: `{boardbyproj(projid: "${proj._id}"){ 
-                _id
-                startDate
-                endDate
-                name
-                board_projectId
-            }}`
-         })
-       });
-       let json = await response.json();
-       setState({ boards: json.data.boardbyproj, displayBoard: !state.displayBoard });
-     } catch (error) {
-       console.log(error);
-     }
-}
-
-const UserStory = () => {
-
-}
-
- return (
-   <MuiThemeProvider theme={theme}>
-     <Card
-       style={{ marginTop: "5%", width: "95%" }}
-       className={"CHANGE_ME_TOO"}
-     >
-       <CardHeader
-         title="Update A Project"
-         color="inherit"
-         style={{ textAlign: "center" }}
-       />
-       <CardContent
-         style={{
-           display: "grid",
-           gridTemplateColumns: "25% 75%",
-           gridTemplateRows: "auto"
-         }}
-       >
-         <div>
-           <FormControl component="fieldset">
-             <FormLabel>Choose What Project to Update:</FormLabel>
-             <Autocomplete
-               id="projects"
-               options={[...state.projects.map(proj => proj)]}
-               getOptionLabel={option => option.name}
-               onChange={(event, value) => handleClick(value)}
-               style={{ margin: "5% 0" }}
-               renderInput={param => (
-                 <TextField {...param} label="projects" variant="outlined" />
-               )}
-             />
-               <Autocomplete
-                 id="boards"
-                 options={[...state.boards.map(board => board)]}
-                 getOptionLabel={option => option.name}
-                 onChange={(event, value) => handleBoardClick(value)}
-                 style={{ margin: "5% 0" }}
-                 renderInput={param => (
-                   <TextField {...param} label="boards" variant="outlined" />
-                 )}
-               />
-           </FormControl>
-         </div>
-       </CardContent>
-     </Card>
-   </MuiThemeProvider>
- );
+  return (
+    <MuiThemeProvider theme={theme}>
+      <Card
+        style={{ marginTop: "5%", width: "95%" }}
+        className={"CHANGE_ME_TOO"}
+      >
+        <CardHeader
+          title="Update A Project"
+          color="inherit"
+          style={{ textAlign: "center" }}
+        />
+        <CardContent
+          style={{
+            display: "grid",
+            gridTemplateColumns: "25% 75%",
+            gridTemplateRows: "auto",
+          }}
+        >
+          <div>
+            <FormControl component="fieldset">
+              <FormLabel>Choose What to Display:</FormLabel>
+              <RadioGroup
+                aria-label="Choose what to display"
+                name="choose_display"
+                value={radioSelected}
+                onChange={handleRadioSelection}
+              >
+                <FormGroup>
+                  <FormControlLabel
+                    value="projects"
+                    control={<Radio />}
+                    label="Projects"
+                  />
+                  <FormControlLabel
+                    value="users"
+                    control={<Radio />}
+                    label="Users"
+                  />
+                  <FormControlLabel
+                    value="boards"
+                    control={<Radio />}
+                    label="Boards"
+                  />
+                  <FormControlLabel
+                    value="userStories"
+                    control={<Radio />}
+                    label="User Stories"
+                  />
+                  <FormControlLabel
+                    value="tasks"
+                    control={<Radio />}
+                    label="Tasks"
+                  />
+                </FormGroup>
+              </RadioGroup>
+            </FormControl>
+          </div>
+          <RenderUpdate />
+        </CardContent>
+      </Card>
+    </MuiThemeProvider>
+  );
 };
 
 export default UpdateSelection;
