@@ -693,6 +693,23 @@ const resolvers = {
     );
     return results.value ? newTeamVelocity : null;
   },
+
+  // Set Completed date
+  updateCompleteDateTask: async (args) => {
+    let db = await rts.loadDB();
+    let completionDate = moment().format("YYYY-MM-DD");
+
+    let results = await rts.updateOne(
+      db,
+      "Tasks",
+      {
+        _id: new mongo.ObjectID(args.id),
+      },
+      { completionDate }
+    );
+
+    return results.value ? results.value : null;
+  },
 };
 
 module.exports = { resolvers };

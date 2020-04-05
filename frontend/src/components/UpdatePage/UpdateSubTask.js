@@ -9,22 +9,28 @@ import {
   TableRow,
   TableCell,
   TextField,
+  Select,
+  MenuItem,
+  Button,
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const UpdateSubTask = () => {
   const initialState = {
     tasks: [],
-    task: {},
-    sprintName: null,
-    userStoryName: null,
-    User: null,
+    userStories: [],
+    sprints: [],
+    users: [],
+    selectedTask: {},
   };
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
 
   useEffect(() => {
     fetchAllTasks();
+    fetchAllUserStories();
+    fetchAllSprints();
+    fetchAllUsers();
   }, []);
 
   // Fetch info
@@ -57,6 +63,75 @@ const UpdateSubTask = () => {
     }
   };
 
+  // Fetch all userStories
+  const fetchAllUserStories = async () => {
+    try {
+      let response = await fetch("http://localhost:5000/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: `query { userstories {
+                      _id
+                      name
+                    }}`,
+        }),
+      });
+      let json = await response.json();
+
+      setState({
+        userStories: json.data.userstories,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // Fetch all sprints
+  const fetchAllSprints = async () => {
+    try {
+      let response = await fetch("http://localhost:5000/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: `query { boards {
+                      _id
+                      name
+                    }}`,
+        }),
+      });
+      let json = await response.json();
+
+      setState({
+        sprints: json.data.boards,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // Fetch all users
+  const fetchAllUsers = async () => {
+    try {
+      let response = await fetch("http://localhost:5000/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: `query { users {
+                      _id
+                      username
+                    }}`,
+        }),
+      });
+      let json = await response.json();
+
+      setState({
+        users: json.data.users,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const handleClick = async (value) => {
     fetchAdditional(value);
   };
@@ -67,59 +142,128 @@ const UpdateSubTask = () => {
       // Get the task with name == value
       const selectedTask = state.tasks.find((task) => task.name === value);
       setState({
-        task: selectedTask,
+        selectedTask,
       });
-
-      // Get sprint name
-      let responseSprint = await fetch("http://localhost:5000/graphql", {
-        method: "POST",
-        headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify({
-          query: `{boardbyid(id: "${selectedTask.task_sprint}") {
-      name
-    }}`,
-        }),
-      });
-      let sprint = await responseSprint.json();
-
-      // Set the sprint name with data gathered
-      setState({ sprintName: sprint.data.boardbyid.name });
-
-      // Get user story name
-      let responseUserStory = await fetch("http://localhost:5000/graphql", {
-        method: "POST",
-        headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify({
-          query: `{usbyid(id: "${selectedTask.task_userStoryId}") {
-        name
-      }}`,
-        }),
-      });
-      let userStory = await responseUserStory.json();
-
-      // Set user story name with data gathered
-      setState({ userStoryName: userStory.data.usbyid.name });
-
-      // Finally get user info
-      let responseUser = await fetch("http://localhost:5000/graphql", {
-        method: "POST",
-        headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify({
-          query: `{userbyid(id: "${selectedTask.task_assignedToId}") {
-        username
-      }}`,
-        }),
-      });
-      let user = await responseUser.json();
-
-      // Set user name
-      setState({ User: user.data.userbyid.username });
     } catch (ex) {
       console.log(ex);
     }
   };
 
-  console.log({ est: state.task.estimate });
+  // Handles selections on autocomplete
+  // user story
+  const handleUSClick = (e) => {
+    setState({
+      selectedTask: {
+        ...state.selectedTask,
+        userStoryId: e.target.value,
+      },
+    });
+  };
+
+  //sprint/board
+  const handleSClick = (e) => {
+    setState({
+      selectedTask: {
+        ...state.selectedTask,
+        sprintId: e.target.value,
+      },
+    });
+  };
+
+  // user
+  const handleUClick = (e) => {
+    setState({
+      selectedTask: {
+        ...state.selectedTask,
+        userId: e.target.value,
+      },
+    });
+  };
+
+  // Updates a user
+  const handleUpdate = async () => {
+    try {
+      const {
+        _id,
+        name,
+        creationDate,
+        completionDate,
+        status,
+        estimate,
+        task_sprint,
+        task_userStoryId,
+        task_assignedToId,
+      } = state.selectedTask;
+
+      let response = await fetch("http://localhost:5000/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: `mutation { updatetask (
+            id: "${_id}",
+            name: "${name}", 
+            creationDate: "${creationDate}", 
+            completionDate: "${completionDate}",
+            status: "${status}",
+            estimate: ${estimate},
+            sprint: "${task_sprint}",
+            userstory: "${task_userStoryId}",
+            userassigned: "${task_assignedToId}"
+          ) {
+              _id
+              name
+              creationDate
+              completionDate
+              status
+              estimate
+              task_sprint
+              task_userStoryId
+              task_assignedToId
+          }}`,
+        }),
+      });
+      let json = await response.json();
+
+      setState({ selectedTask: json.data.updatetask });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // Sets the completion date of a task
+  const handleComplete = async () => {
+    try {
+      let response = await fetch("http://localhost:5000/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: `mutation { updateCompleteDateTask (
+            id: "${state.selectedTask._id}"
+          ) {
+              _id
+              name
+              creationDate
+              completionDate
+              status
+              estimate
+              task_sprint
+              task_userStoryId
+              task_assignedToId
+          }}`,
+        }),
+      });
+
+      let json = await response.json();
+      setState({ selectedTask: json.data.updateCompleteDateTask });
+    } catch (ex) {
+      console.log(ex);
+    }
+  };
+
+  // Decides whether or not to show complete button
+  const showComplete =
+    state.selectedTask.completionDate === null ||
+    state.selectedTask.completionDate === "";
 
   return (
     <div>
@@ -133,7 +277,7 @@ const UpdateSubTask = () => {
           <TextField {...param} label="Tasks" variant="outlined" />
         )}
       />
-      {Object.keys(state.task).length > 0 && (
+      {Object.keys(state.selectedTask).length > 0 && (
         <Card>
           <CardHeader title="Tasks" />
           <CardContent>
@@ -146,10 +290,14 @@ const UpdateSubTask = () => {
                     </TableCell>
                     <TableCell>
                       <TextField
-                        value={state.task.name}
+                        fullWidth
+                        value={state.selectedTask.name}
                         onChange={(e) =>
                           setState({
-                            task: { ...state.task, name: e.target.value },
+                            selectedTask: {
+                              ...state.selectedTask,
+                              name: e.target.value,
+                            },
                           })
                         }
                       />
@@ -159,10 +307,14 @@ const UpdateSubTask = () => {
                     </TableCell>
                     <TableCell>
                       <TextField
-                        value={state.task.status}
+                        fullWidth
+                        value={state.selectedTask.status}
                         onChange={(e) =>
                           setState({
-                            task: { ...state.task, status: e.target.value },
+                            selectedTask: {
+                              ...state.selectedTask,
+                              status: e.target.value,
+                            },
                           })
                         }
                       />
@@ -174,11 +326,15 @@ const UpdateSubTask = () => {
                     </TableCell>
                     <TableCell>
                       <TextField
+                        fullWidth
                         type="number"
-                        value={state.task.estimate}
+                        value={state.selectedTask.estimate}
                         onChange={(e) =>
                           setState({
-                            task: { ...state.task, estimate: e.target.value },
+                            selectedTask: {
+                              ...state.selectedTask,
+                              estimate: e.target.value,
+                            },
                           })
                         }
                       />
@@ -186,21 +342,84 @@ const UpdateSubTask = () => {
                     <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                       User Story:
                     </TableCell>
-                    <TableCell>{state.userStoryName}</TableCell>
+                    <TableCell>
+                      <Select
+                        fullWidth
+                        id="tasks_userStory"
+                        value={state.selectedTask.task_userStoryId}
+                        onChange={(e) => handleUSClick(e)}
+                      >
+                        {state.userStories.map((us, index) => (
+                          <MenuItem key={index} value={us._id}>
+                            {us.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                       Sprint:
                     </TableCell>
-                    <TableCell>{state.sprintName}</TableCell>
+                    <TableCell>
+                      <Select
+                        fullWidth
+                        id="tasks_sprint"
+                        value={state.selectedTask.task_sprint}
+                        onChange={(e) => handleSClick(e)}
+                      >
+                        {state.sprints.map((us, index) => (
+                          <MenuItem key={index} value={us._id}>
+                            {us.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </TableCell>
                     <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                       User Assigned:
                     </TableCell>
-                    <TableCell>{state.User}</TableCell>
+                    <TableCell>
+                      <Select
+                        fullWidth
+                        id="tasks_user"
+                        value={state.selectedTask.task_assignedToId}
+                        onChange={(e) => handleUClick(e)}
+                      >
+                        {state.users.map((us, index) => (
+                          <MenuItem key={index} value={us._id}>
+                            {us.username}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
               </Table>
             </TableContainer>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-around",
+                marginTop: "2%",
+              }}
+            >
+              <Button
+                onClick={handleUpdate}
+                variant="contained"
+                color="primary"
+              >
+                Update
+              </Button>
+              {showComplete && (
+                <Button
+                  onClick={handleComplete}
+                  variant="contained"
+                  color="secondary"
+                >
+                  Completed!
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
       )}

@@ -159,6 +159,8 @@ const schema = buildSchema(`
         updateuvelocity(id: String, velocity: Float, userid: String, boardid: String): UserVelocity,
         updatetvelocity(id: String, velocity: Float, boardid: String): TeamVelocity,
         updateuserproject(id: String, userId: String, projectId: String): UserProjectLookup,
+        
+        updateCompleteDateTask(id: String): Task
     }
 `);
 
