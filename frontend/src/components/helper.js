@@ -10,7 +10,7 @@ const PageTitle = (radioSelected) => {
     case "userStories":
       return "User Stories";
     default:
-      return "Sub Tasks";
+      return "Tasks";
   }
 };
 
