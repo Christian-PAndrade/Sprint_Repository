@@ -10,7 +10,7 @@ import {
   FormGroup,
   FormLabel,
   Radio,
-  RadioGroup
+  RadioGroup,
 } from "@material-ui/core";
 
 import ViewSubTask from "./ViewSubTask";
@@ -18,17 +18,18 @@ import ViewUserStory from "./ViewUserStory";
 import ViewUsers from "./ViewUsers";
 import ViewProject from "./ViewProject";
 import ViewBoards from "./ViewBoards";
+import { PageTitle } from "../helper";
 
 const ViewSelection = () => {
   const [radioSelected, setRadioSelected] = useState("projects");
 
-  const handleRadioSelection = e => {
+  const handleRadioSelection = (e) => {
     setRadioSelected(e.target.value);
   };
 
   const RenderView = () => {
     if (radioSelected === "projects") return <ViewProject />;
-    if (radioSelected === "boards") return <ViewBoards/>;
+    if (radioSelected === "boards") return <ViewBoards />;
     if (radioSelected === "users") return <ViewUsers />;
     if (radioSelected === "userStories") return <ViewUserStory />;
     else return <ViewSubTask />;
@@ -41,7 +42,7 @@ const ViewSelection = () => {
         className={"CHANGE_ME_TOO"}
       >
         <CardHeader
-          title="View Information"
+          title={`View ${PageTitle(radioSelected)}`}
           color="inherit"
           style={{ textAlign: "center" }}
         />
@@ -49,7 +50,7 @@ const ViewSelection = () => {
           style={{
             display: "grid",
             gridTemplateColumns: "25% 75%",
-            gridTemplateRows: "auto"
+            gridTemplateRows: "auto",
           }}
         >
           <div>

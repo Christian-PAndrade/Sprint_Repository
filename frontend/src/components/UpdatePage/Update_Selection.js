@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { MuiThemeProvider, RadioGroup, Radio } from "@material-ui/core";
 import theme from "../../styles/theme";
 import {
@@ -9,14 +9,14 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
-  TextField,
 } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+
 import UpdateProject from "./UpdateProject";
 import UpdateBoards from "./UpdateBoards";
 import UpdateUsers from "./UpdateUsers";
 import UpdateUserStory from "./UpdateUserStory";
 import UpdateSubTask from "./UpdateSubTask";
+import { PageTitle } from "../helper";
 
 const UpdateSelection = () => {
   const [radioSelected, setRadioSelected] = useState("projects");
@@ -40,7 +40,7 @@ const UpdateSelection = () => {
         className={"CHANGE_ME_TOO"}
       >
         <CardHeader
-          title="Update A Project"
+          title={`Update ${PageTitle(radioSelected)}`}
           color="inherit"
           style={{ textAlign: "center" }}
         />
