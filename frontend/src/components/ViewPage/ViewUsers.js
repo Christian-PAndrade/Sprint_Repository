@@ -8,7 +8,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField
+  TextField,
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
@@ -17,16 +17,19 @@ const ViewUsers = () => {
     users: [],
     user: {},
     projectName: null,
-    projects: []
+    projects: [],
+    selectedUserVelocities: [],
+    sprints: [],
   };
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
 
   useEffect(() => {
     fetchAllUsers();
+    fetchAllSprints();
   }, []);
 
-  const handleClick = value => {
+  const handleClick = (value) => {
     fetchUser(value);
   };
 
@@ -40,20 +43,43 @@ const ViewUsers = () => {
                 _id
                 username
                 isAdmin
-              }}`
-        })
+              }}`,
+        }),
       });
       let json = await response.json();
 
       setState({
-        users: json.data.users
+        users: json.data.users,
       });
     } catch (err) {
       console.log(err);
     }
   };
 
-  const fetchUser = async value => {
+  // Fetch all sprints
+  const fetchAllSprints = async () => {
+    try {
+      let response = await fetch("http://localhost:5000/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: `query { boards {
+                      _id
+                      name
+                    }}`,
+        }),
+      });
+      let json = await response.json();
+
+      setState({
+        sprints: json.data.boards,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const fetchUser = async (value) => {
     try {
       if (value) {
         const query = `{ userbyname(name: "${value}") {
@@ -66,14 +92,14 @@ const ViewUsers = () => {
           method: "POST",
           headers: { "Content-Type": "application/json; charset=utf-8" },
           body: JSON.stringify({
-            query: query
-          })
+            query: query,
+          }),
         });
         let json = await response.json();
 
         setState({ user: json.data.userbyname });
 
-        //await fetchAdditional(json.data.userbyname);
+        await fetchVelocity(json.data.userbyname._id);
       } else {
         setState({ userStory: {} });
       }
@@ -82,7 +108,27 @@ const ViewUsers = () => {
     }
   };
 
-  const fetchAdditional = async user => {};
+  const fetchVelocity = async (userId) => {
+    try {
+      let response = await fetch("http://localhost:5000/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: `query { uvelbyuser(userid: "${userId}") {
+              _id
+              velocity
+              userVelocity_userId
+              userVelocity_boardId
+            }}`,
+        }),
+      });
+      let json = await response.json();
+
+      setState({ selectedUserVelocities: json.data.uvelbyuser });
+    } catch (ex) {
+      console.log(ex);
+    }
+  };
 
   const UserInfo = () => {
     return (
@@ -97,13 +143,30 @@ const ViewUsers = () => {
                     Name:
                   </TableCell>
                   <TableCell>{state.user.username}</TableCell>
-                </TableRow>
-                <TableRow>
                   <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                     Is user Admin:
                   </TableCell>
                   <TableCell>{state.user.isAdmin ? "true" : "false"}</TableCell>
                 </TableRow>
+                {state.selectedUserVelocities &&
+                  state.selectedUserVelocities.map((vel, index) => (
+                    <TableRow key={index}>
+                      <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                        Sprint (Board):
+                      </TableCell>
+                      <TableCell>
+                        {
+                          state.sprints.find(
+                            (sprint) => sprint._id === vel.userVelocity_boardId
+                          ).name
+                        }
+                      </TableCell>
+                      <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                        Velocity:
+                      </TableCell>
+                      <TableCell>{vel.velocity}</TableCell>
+                    </TableRow>
+                  ))}
               </TableHead>
             </Table>
           </TableContainer>
@@ -116,7 +179,7 @@ const ViewUsers = () => {
   const Projects = () => {
     return (
       <div>
-        {state.projects.map(project => (
+        {state.projects.map((project) => (
           <div key={Math.random()}>
             <p>Project Name: {project.name}</p>
           </div>
@@ -129,11 +192,11 @@ const ViewUsers = () => {
     <div>
       <Autocomplete
         id="users"
-        options={[...state.users.map(user => user.username)]}
-        getOptionLabel={option => option}
+        options={[...state.users.map((user) => user.username)]}
+        getOptionLabel={(option) => option}
         onChange={(event, value) => handleClick(value)}
-        style={{ margin: "5% 0" }}
-        renderInput={param => (
+        style={{ marginBottom: "5%" }}
+        renderInput={(param) => (
           <TextField {...param} label="Users" variant="outlined" />
         )}
       />

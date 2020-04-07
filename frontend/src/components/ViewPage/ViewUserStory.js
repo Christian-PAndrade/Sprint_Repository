@@ -18,6 +18,7 @@ const ViewUserStory = () => {
     userStory: {},
     sprintName: null,
     tasks: [],
+    userStoryUser: "",
   };
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
@@ -45,6 +46,8 @@ const ViewUserStory = () => {
             estimate
             hoursWorked
             reestimate
+            userStory_boardId
+            userStory_userId
             }}`,
         }),
       });
@@ -71,6 +74,7 @@ const ViewUserStory = () => {
                 hoursWorked
                 reestimate
                 userStory_boardId
+                userStory_userId
           }}`;
 
         let response = await fetch("http://localhost:5000/graphql", {
@@ -109,7 +113,7 @@ const ViewUserStory = () => {
       setState({ sprintName: json.data.boardbyid.name });
 
       // Get tasks for that board -- taskbyboard(boardid: String): [Task],
-      const queryTasks = `{ taskbyboard(boardid: "${us.userStory_boardId}") {name status}}`;
+      const queryTasks = `{ taskbyus(userst: "${us._id}") {name status}}`;
       let responseTasks = await fetch("http://localhost:5000/graphql", {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
@@ -119,8 +123,20 @@ const ViewUserStory = () => {
       });
 
       let jsonTasks = await responseTasks.json();
-      console.log(jsonTasks.data.taskbyboard);
-      setState({ tasks: jsonTasks.data.taskbyboard });
+      setState({ tasks: jsonTasks.data.taskbyus });
+
+      // Fetch username
+      let userFetch = await fetch("http://localhost:5000/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: `{ userbyid(id: "${us.userStory_userId}") {username}}`,
+        }),
+      });
+
+      let userJson = await userFetch.json();
+
+      setState({ userStoryUser: userJson.data.userbyid.username });
     } catch (err) {
       console.log(err);
     }
@@ -163,6 +179,16 @@ const ViewUserStory = () => {
                     Sprint:
                   </TableCell>
                   <TableCell>{state.sprintName}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    user:
+                  </TableCell>
+                  <TableCell>{state.userStoryUser}</TableCell>
+                  <TableCell
+                    style={{ fontWeight: "bold", fontSize: 17 }}
+                  ></TableCell>
+                  <TableCell></TableCell>
                 </TableRow>
               </TableHead>
             </Table>
@@ -207,7 +233,7 @@ const ViewUserStory = () => {
         options={[...state.userStories.map((us) => us.name)]}
         getOptionLabel={(option) => option}
         onChange={(event, value) => handleClick(value)}
-        style={{ margin: "5% 0" }}
+        style={{ marginBottom: "5%" }}
         renderInput={(param) => (
           <TextField {...param} label="User Stories" variant="outlined" />
         )}

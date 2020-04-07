@@ -8,7 +8,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField
+  TextField,
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
@@ -18,7 +18,7 @@ const ViewSubTask = () => {
     task: {},
     sprintName: null,
     userStoryName: null,
-    User: null
+    User: null,
   };
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
@@ -27,7 +27,7 @@ const ViewSubTask = () => {
     fetchAllTasks();
   }, []);
 
-  const handleClick = value => {
+  const handleClick = (value) => {
     fetchTask(value);
   };
 
@@ -44,51 +44,32 @@ const ViewSubTask = () => {
                       completionDate
                       status
                       estimate
-                      task_sprint
+                      timeWorked
                       task_userStoryId
                       task_assignedToId
-                    }}`
-        })
+                    }}`,
+        }),
       });
       let json = await response.json();
 
       setState({
-        tasks: json.data.tasks
+        tasks: json.data.tasks,
       });
     } catch (err) {
       console.log(err);
     }
   };
 
-  const fetchTask = async value => {
+  const fetchTask = async (value) => {
     try {
       if (value) {
-        const query = `{ taskbyname(name: "${value}") {
-          _id
-          name
-          creationDate
-          completionDate
-          status
-          estimate
-          task_sprint
-          task_userStoryId
-          task_assignedToId
-        }}`;
-
-        let response = await fetch("http://localhost:5000/graphql", {
-          method: "POST",
-          headers: { "Content-Type": "application/json; charset=utf-8" },
-          body: JSON.stringify({
-            query: query
-          })
-        });
-        let json = await response.json();
+        const selectedTask = state.tasks.find((task) => task.name === value);
 
         setState({
-          task: json.data.taskbyname
+          task: selectedTask,
         });
 
-        await fetchAdditional(json.data.taskbyname);
+        await fetchAdditional(selectedTask);
       } else {
         setState({ task: {} });
       }
@@ -97,7 +78,7 @@ const ViewSubTask = () => {
     }
   };
 
-  const fetchAdditional = async task => {
+  const fetchAdditional = async (task) => {
     try {
       // Get sprint name from id
       const querySprint = `{boardbyid(id: "${task.task_sprint}") {
@@ -108,8 +89,8 @@ const ViewSubTask = () => {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
-          query: querySprint
-        })
+          query: querySprint,
+        }),
       });
 
       let json = await responseSprint.json();
@@ -124,8 +105,8 @@ const ViewSubTask = () => {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
-          query: queryUserStory
-        })
+          query: queryUserStory,
+        }),
       });
 
       let jsonUserStory = await responseUserStory.json();
@@ -140,8 +121,8 @@ const ViewSubTask = () => {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
-          query: queryUser
-        })
+          query: queryUser,
+        }),
       });
 
       let jsonUser = await responseUser.json();
@@ -193,13 +174,13 @@ const ViewSubTask = () => {
                 </TableRow>
                 <TableRow>
                   <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
-                    Sprint:
-                  </TableCell>
-                  <TableCell>{state.sprintName}</TableCell>
-                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                     User Assigned:
                   </TableCell>
                   <TableCell>{state.User}</TableCell>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    Time Worked:
+                  </TableCell>
+                  <TableCell>{state.task.timeWorked}</TableCell>
                 </TableRow>
               </TableHead>
             </Table>
@@ -213,11 +194,11 @@ const ViewSubTask = () => {
     <div>
       <Autocomplete
         id="tasks"
-        options={[...state.tasks.map(task => task.name)]}
-        getOptionLabel={option => option}
+        options={[...state.tasks.map((task) => task.name)]}
+        getOptionLabel={(option) => option}
         onChange={(event, value) => handleClick(value)}
-        style={{ margin: "5% 0" }}
-        renderInput={param => (
+        style={{ marginBottom: "5%" }}
+        renderInput={(param) => (
           <TextField {...param} label="Tasks" variant="outlined" />
         )}
       />

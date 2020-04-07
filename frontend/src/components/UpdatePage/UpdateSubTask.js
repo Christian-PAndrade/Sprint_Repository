@@ -54,7 +54,6 @@ const UpdateSubTask = () => {
                       status
                       estimate
                       timeWorked
-                      task_sprint
                       task_userStoryId
                       task_assignedToId
                     }}`,
@@ -167,16 +166,6 @@ const UpdateSubTask = () => {
     });
   };
 
-  //sprint/board
-  const handleSClick = (e) => {
-    setState({
-      selectedTask: {
-        ...state.selectedTask,
-        sprintId: e.target.value,
-      },
-    });
-  };
-
   // user
   const handleUClick = (e) => {
     setState({
@@ -198,7 +187,6 @@ const UpdateSubTask = () => {
         status,
         estimate,
         timeWorked,
-        task_sprint,
         task_userStoryId,
         task_assignedToId,
       } = state.selectedTask;
@@ -215,7 +203,6 @@ const UpdateSubTask = () => {
             status: "${status}",
             estimate: ${estimate},
             timeWorked: ${timeWorked}
-            sprint: "${task_sprint}",
             userstory: "${task_userStoryId}",
             userassigned: "${task_assignedToId}"
           ) {
@@ -226,7 +213,6 @@ const UpdateSubTask = () => {
               status
               estimate
               timeWorked
-              task_sprint
               task_userStoryId
               task_assignedToId
           }}`,
@@ -257,7 +243,6 @@ const UpdateSubTask = () => {
               status
               estimate
               timeWorked
-              task_sprint
               task_userStoryId
               task_assignedToId
           }}`,
@@ -291,7 +276,6 @@ const UpdateSubTask = () => {
               status
               estimate
               timeWorked
-              task_sprint
               task_userStoryId
               task_assignedToId
           }}`,
@@ -404,23 +388,6 @@ const UpdateSubTask = () => {
                   </TableRow>
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
-                      Sprint:
-                    </TableCell>
-                    <TableCell>
-                      <Select
-                        fullWidth
-                        id="tasks_sprint"
-                        value={state.selectedTask.task_sprint}
-                        onChange={(e) => handleSClick(e)}
-                      >
-                        {state.sprints.map((us, index) => (
-                          <MenuItem key={index} value={us._id}>
-                            {us.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </TableCell>
-                    <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                       User Assigned:
                     </TableCell>
                     <TableCell>
@@ -437,8 +404,6 @@ const UpdateSubTask = () => {
                         ))}
                       </Select>
                     </TableCell>
-                  </TableRow>
-                  <TableRow>
                     <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                       Hours Worked:
                     </TableCell>

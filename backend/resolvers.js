@@ -118,6 +118,27 @@ const resolvers = {
       {}
     );
   },
+  usbyuser: async (args) => {
+    let db = await rts.loadDB();
+    return await rts.findAll(
+      db,
+      "UserStories",
+      { userStory_userId: new mongo.ObjectID(args.userId) },
+      {}
+    );
+  },
+  usbyuserandboard: async (args) => {
+    let db = await rts.loadDB();
+    return await rts.findAll(
+      db,
+      "UserStories",
+      {
+        userStory_userId: new mongo.ObjectID(args.userId),
+        userStory_boardId: new mongo.ObjectID(args.boardId),
+      },
+      {}
+    );
+  },
 
   // Tasks
   tasks: async () => {
@@ -351,6 +372,7 @@ const resolvers = {
       hoursWorked: args.hoursWorked,
       reestimate: args.reestimate,
       userStory_boardId: new mongo.ObjectID(args.boardId),
+      userStory_userId: new mongo.ObjectID(args.userId),
     };
 
     let results = await rts.addOne(db, "UserStories", userStory);
@@ -367,7 +389,6 @@ const resolvers = {
       status: args.status,
       estimate: args.estimate,
       timeWorked: args.timeWorked || 0,
-      task_sprint: new mongo.ObjectID(args.sprint),
       task_userStoryId: new mongo.ObjectID(args.userstory),
       task_assignedToId: new mongo.ObjectID(args.userassigned),
     };
@@ -578,6 +599,7 @@ const resolvers = {
       hoursWorked: args.hoursWorked,
       reestimate: args.reestimate,
       userStory_boardId: new mongo.ObjectID(args.boardId),
+      userStory_userId: new mongo.ObjectID(args.userId),
     };
 
     let results = await rts.updateOne(
@@ -601,7 +623,6 @@ const resolvers = {
       status: args.status,
       estimate: args.estimate,
       timeWorked: args.timeWorked || 0,
-      task_sprint: new mongo.ObjectID(args.sprint),
       task_userStoryId: new mongo.ObjectID(args.userstory),
       task_assignedToId: new mongo.ObjectID(args.userassigned),
     };
@@ -741,6 +762,21 @@ const resolvers = {
     } else {
       return null;
     }
+  },
+
+  // Gets all tasks for a specific user in a specific board
+  taskbyuseranduserstory: async (args) => {
+    let db = await rts.loadDB();
+
+    return await rts.findAll(
+      db,
+      "Tasks",
+      {
+        task_userStoryId: new mongo.ObjectID(args.USId),
+        task_assignedToId: new mongo.ObjectID(args.userId),
+      },
+      {}
+    );
   },
 };
 

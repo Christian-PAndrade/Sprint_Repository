@@ -21,14 +21,16 @@ const schema = buildSchema(`
         usbyid(id: String): UserStory,
         usbystatus(status: String): [UserStory],
         usbyboard(boardid: String): [UserStory],
+        usbyuser(userId: String): [UserStory],
+        usbyuserandboard(userId: String, boardId: String): [UserStory]
 
         tasks: [Task],
         taskbyname(name: String): Task,
         taskbyid(id: String): Task,
         taskbystatus(status: String): [Task],
-        taskbyboard(boardid: String): [Task],
         taskbyus(userst: String): [Task],
         taskbyuser(userid: String): [Task],
+        taskbyuseranduserstory(userId: String, USId: String): [Task],
 
         uestimates: [UserEstimate],
         uestbyid(id: String): UserEstimate,
@@ -80,6 +82,7 @@ const schema = buildSchema(`
         hoursWorked: Float
         reestimate: String
         userStory_boardId: String
+        userStory_userId: String
     }
 
     type Task {
@@ -90,7 +93,6 @@ const schema = buildSchema(`
         status: String
         estimate: Float
         timeWorked: Float
-        task_sprint: String
         task_userStoryId: String
         task_assignedToId: String
     }
@@ -131,8 +133,8 @@ const schema = buildSchema(`
     type Mutation {
         adduser(username: String, isAdmin: Boolean): User,
         addproject(name: String): Project,
-        adduserstory(name: String, creationDate: String, completionDate: String, status: String, estimate: Float, hoursWorked: Float, reestimate: String, boardId: String): UserStory,
-        addtask(name: String, creationDate: String, completionDate: String, status: String, estimate: Float, sprint: String, userstory: String, userassigned: String): Task,
+        adduserstory(name: String, creationDate: String, completionDate: String, status: String, estimate: Float, hoursWorked: Float, reestimate: String, boardId: String, userId: String): UserStory,
+        addtask(name: String, creationDate: String, completionDate: String, status: String, estimate: Float, userstory: String, userassigned: String): Task,
         adduestimate(estimate: Float, actual: Float, accuracy: Float, board: String) : UserEstimate,
         addtestimate(accuracy: Float, boardid: String) : TeamEstimate,
         adduvelocity(velocity: Float, userid: String, boardid: String): UserVelocity,
@@ -153,8 +155,8 @@ const schema = buildSchema(`
 
         updateuser(id: String, name: String, isAdmin: Boolean): User,
         updateproject(id: String, name: String): Project,
-        updateuserstory(id: String, name: String, creationDate: String, completionDate: String, status: String, estimate: Float, hoursWorked: Float, reestimate: String, boarId: String): UserStory,
-        updatetask(id: String, name: String, creationDate: String, completionDate: String, status: String, estimate: Float, sprint: String, userstory: String, userassigned: String): Task,
+        updateuserstory(id: String, name: String, creationDate: String, completionDate: String, status: String, estimate: Float, hoursWorked: Float, reestimate: String, boarId: String, userId: String): UserStory,
+        updatetask(id: String, name: String, creationDate: String, completionDate: String, status: String, estimate: Float, timeWorked: Float userstory: String, userassigned: String): Task,
         updateuestimate(id: String, estimate: Float, actual: Float, accuracy: Float, board: String) : UserEstimate,
         updatetestimate(id: String, accuracy: Float, boardid: String) : TeamEstimate,
         updateuvelocity(id: String, velocity: Float, userid: String, boardid: String): UserVelocity,
