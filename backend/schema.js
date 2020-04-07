@@ -89,6 +89,7 @@ const schema = buildSchema(`
         completionDate: String
         status: String
         estimate: Float
+        timeWorked: Float
         task_sprint: String
         task_userStoryId: String
         task_assignedToId: String
@@ -161,6 +162,7 @@ const schema = buildSchema(`
         updateuserproject(id: String, userId: String, projectId: String): UserProjectLookup,
         
         updateCompleteDateTask(id: String): Task
+        logTimeToTask(id:String, time: Float): Task
     }
 `);
 

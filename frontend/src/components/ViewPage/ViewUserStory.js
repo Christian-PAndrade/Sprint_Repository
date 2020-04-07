@@ -1,18 +1,14 @@
 import React, { useReducer, useEffect } from "react";
 import {
-  Button,
   Card,
   CardHeader,
   CardContent,
   Table,
-  TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  MuiThemeProvider,
-  TextField
+  TextField,
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
@@ -21,7 +17,7 @@ const ViewUserStory = () => {
     userStories: [],
     userStory: {},
     sprintName: null,
-    tasks: []
+    tasks: [],
   };
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
@@ -30,7 +26,7 @@ const ViewUserStory = () => {
     fetchAllUserStories();
   }, []);
 
-  const handleClick = value => {
+  const handleClick = (value) => {
     fetchUserStory(value);
   };
 
@@ -49,20 +45,20 @@ const ViewUserStory = () => {
             estimate
             hoursWorked
             reestimate
-            }}`
-        })
+            }}`,
+        }),
       });
       let json = await response.json();
 
       setState({
-        userStories: json.data.userstories
+        userStories: json.data.userstories,
       });
     } catch (err) {
       console.log(err);
     }
   };
 
-  const fetchUserStory = async value => {
+  const fetchUserStory = async (value) => {
     try {
       if (value) {
         const query = `{ usbyname(name: "${value}") {
@@ -81,8 +77,8 @@ const ViewUserStory = () => {
           method: "POST",
           headers: { "Content-Type": "application/json; charset=utf-8" },
           body: JSON.stringify({
-            query: query
-          })
+            query: query,
+          }),
         });
         let json = await response.json();
 
@@ -97,7 +93,7 @@ const ViewUserStory = () => {
     }
   };
 
-  const fetchAdditional = async us => {
+  const fetchAdditional = async (us) => {
     try {
       // get sprint by id
       const querySprint = `{ boardbyid(id: "${us.userStory_boardId}") {name}}`;
@@ -105,8 +101,8 @@ const ViewUserStory = () => {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
-          query: querySprint
-        })
+          query: querySprint,
+        }),
       });
 
       let json = await responseSprint.json();
@@ -118,8 +114,8 @@ const ViewUserStory = () => {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
-          query: queryTasks
-        })
+          query: queryTasks,
+        }),
       });
 
       let jsonTasks = await responseTasks.json();
@@ -184,7 +180,7 @@ const ViewUserStory = () => {
           <TableContainer>
             <Table>
               <TableHead>
-                {state.tasks.map(task => (
+                {state.tasks.map((task) => (
                   <TableRow key={Math.random()}>
                     <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                       Task Name:
@@ -208,11 +204,11 @@ const ViewUserStory = () => {
     <div>
       <Autocomplete
         id="userstories"
-        options={[...state.userStories.map(us => us.name)]}
-        getOptionLabel={option => option}
+        options={[...state.userStories.map((us) => us.name)]}
+        getOptionLabel={(option) => option}
         onChange={(event, value) => handleClick(value)}
         style={{ margin: "5% 0" }}
-        renderInput={param => (
+        renderInput={(param) => (
           <TextField {...param} label="User Stories" variant="outlined" />
         )}
       />

@@ -366,6 +366,7 @@ const resolvers = {
       completionDate: null,
       status: args.status,
       estimate: args.estimate,
+      timeWorked: args.timeWorked || 0,
       task_sprint: new mongo.ObjectID(args.sprint),
       task_userStoryId: new mongo.ObjectID(args.userstory),
       task_assignedToId: new mongo.ObjectID(args.userassigned),
@@ -599,6 +600,7 @@ const resolvers = {
       completionDate: args.completionDate,
       status: args.status,
       estimate: args.estimate,
+      timeWorked: args.timeWorked || 0,
       task_sprint: new mongo.ObjectID(args.sprint),
       task_userStoryId: new mongo.ObjectID(args.userstory),
       task_assignedToId: new mongo.ObjectID(args.userassigned),
@@ -709,6 +711,36 @@ const resolvers = {
     );
 
     return results.value ? results.value : null;
+  },
+
+  // Logs time to a task
+  logTimeToTask: async (args) => {
+    let db = await rts.loadDB();
+
+    // Get current worked hours
+    let currTask = await rts.findOne(db, "Tasks", {
+      _id: new mongo.ObjectID(args.id),
+    });
+
+    let timeWorked = currTask.timeWorked;
+
+    timeWorked += args.time;
+
+    let results = await rts.updateOne(
+      db,
+      "Tasks",
+      { _id: new mongo.ObjectID(args.id) },
+      { timeWorked }
+    );
+
+    // Fetch new data
+    if (results.value) {
+      return await rts.findOne(db, "Tasks", {
+        _id: new mongo.ObjectID(args.id),
+      });
+    } else {
+      return null;
+    }
   },
 };
 

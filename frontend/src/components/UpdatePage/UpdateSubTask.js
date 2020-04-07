@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -14,8 +14,14 @@ import {
   Button,
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import DialogComp from "../Modal";
 
 const UpdateSubTask = () => {
+  // for modal
+  const [open, setOpen] = useState(false);
+  const [newWorkedHours, setNewWorkedHours] = useState(0);
+
+  // Other state
   const initialState = {
     tasks: [],
     userStories: [],
@@ -47,6 +53,7 @@ const UpdateSubTask = () => {
                       completionDate
                       status
                       estimate
+                      timeWorked
                       task_sprint
                       task_userStoryId
                       task_assignedToId
@@ -190,6 +197,7 @@ const UpdateSubTask = () => {
         completionDate,
         status,
         estimate,
+        timeWorked,
         task_sprint,
         task_userStoryId,
         task_assignedToId,
@@ -206,6 +214,7 @@ const UpdateSubTask = () => {
             completionDate: "${completionDate}",
             status: "${status}",
             estimate: ${estimate},
+            timeWorked: ${timeWorked}
             sprint: "${task_sprint}",
             userstory: "${task_userStoryId}",
             userassigned: "${task_assignedToId}"
@@ -216,6 +225,7 @@ const UpdateSubTask = () => {
               completionDate
               status
               estimate
+              timeWorked
               task_sprint
               task_userStoryId
               task_assignedToId
@@ -246,6 +256,7 @@ const UpdateSubTask = () => {
               completionDate
               status
               estimate
+              timeWorked
               task_sprint
               task_userStoryId
               task_assignedToId
@@ -255,6 +266,40 @@ const UpdateSubTask = () => {
 
       let json = await response.json();
       setState({ selectedTask: json.data.updateCompleteDateTask });
+    } catch (ex) {
+      console.log(ex);
+    }
+  };
+
+  const LogTime = async () => {
+    // Closes modal
+    setOpen(false);
+
+    try {
+      let response = await fetch("http://localhost:5000/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: `mutation { logTimeToTask (
+            id: "${state.selectedTask._id}",
+            time: ${newWorkedHours}
+          ) {
+              _id
+              name
+              creationDate
+              completionDate
+              status
+              estimate
+              timeWorked
+              task_sprint
+              task_userStoryId
+              task_assignedToId
+          }}`,
+        }),
+      });
+
+      let json = await response.json();
+      setState({ selectedTask: json.data.logTimeToTask });
     } catch (ex) {
       console.log(ex);
     }
@@ -393,6 +438,26 @@ const UpdateSubTask = () => {
                       </Select>
                     </TableCell>
                   </TableRow>
+                  <TableRow>
+                    <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                      Hours Worked:
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        fullWidth
+                        disabled
+                        value={state.selectedTask.timeWorked}
+                        onChange={(e) =>
+                          setState({
+                            selectedTask: {
+                              ...state.selectedTask,
+                              timeWorked: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                    </TableCell>
+                  </TableRow>
                 </TableHead>
               </Table>
             </TableContainer>
@@ -410,6 +475,14 @@ const UpdateSubTask = () => {
               >
                 Update
               </Button>
+              <Button
+                onClick={() => setOpen(true)}
+                variant="contained"
+                color="primary"
+              >
+                Log Time
+              </Button>
+
               {showComplete && (
                 <Button
                   onClick={handleComplete}
@@ -421,6 +494,29 @@ const UpdateSubTask = () => {
               )}
             </div>
           </CardContent>
+          <DialogComp
+            open={open}
+            handleCloseDialog={() => setOpen(false)}
+            title="Log Hours"
+            content={
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <TextField
+                  type="number"
+                  inputProps={{ min: "0" }}
+                  value={newWorkedHours}
+                  onChange={(e) => setNewWorkedHours(e.target.value)}
+                />
+                <Button
+                  onClick={LogTime}
+                  variant="contained"
+                  color="primary"
+                  style={{ marginTop: "5%" }}
+                >
+                  Log Time
+                </Button>
+              </div>
+            }
+          />
         </Card>
       )}
     </div>
