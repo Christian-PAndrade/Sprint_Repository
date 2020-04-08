@@ -137,7 +137,7 @@ const schema = buildSchema(`
         addtestimate(accuracy: Float, boardid: String) : TeamEstimate,
         adduvelocity(velocity: Float, userid: String, boardid: String): UserVelocity,
         addtvelocity(velocity: Float, boardid: String): TeamVelocity,
-        addUserToProject(userId: String, projectId: String): UserProjectLookup
+        addusertoproject(userId: String, projectId: String): UserProjectLookup
 
         addboard(startDate: String, name: String, board_projectId: String): Board,
 
