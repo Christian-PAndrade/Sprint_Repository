@@ -154,6 +154,46 @@ const ViewProject = () => {
     }
   };
 
+  const deleteBoardFromProject = async (board, projId) => {
+    try {
+      let response = await fetch("http://localhost:5000/graphql", {
+        origin: "*",
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: `mutation{deleteBoardFromProject(
+                boardId:\"${board._id}\",
+                projectId: \"${projId}\")
+              }`,
+        }),
+      });
+      let json = await response.json();
+      let allProjectsData = [];
+      let boardsForProject = [];
+
+      for (let i = 0; i < state.projects.length; i++) {
+        for (let j = 0; j < state.projects[i].boards.length; j++) {
+          if (state.projects[i].boards[j]._id === board._id) {
+            continue;
+          } else boardsForProject.push(state.projects[i].boards[j]);
+        }
+        allProjectsData.push({
+          _id: state.projects[i]._id,
+          name: state.projects[i].name,
+          users: state.projects[i].users,
+          boards: boardsForProject,
+        });
+        boardsForProject = [];
+      }
+      setState({ projects: allProjectsData });
+
+      if (state.tableKey === false) setState({ tableKey: true });
+      else setState({ tableKey: true });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <MuiThemeProvider theme={theme}>
       <TableContainer component={Paper}>
@@ -245,6 +285,9 @@ const ViewProject = () => {
                                     style={{
                                       backgroundColor: "#FF0000",
                                       fontWeight: "bold",
+                                    }}
+                                    onClick={() => {
+                                      deleteBoardFromProject(board, proj._id);
                                     }}
                                   >
                                     Delete

@@ -149,6 +149,7 @@ const schema = buildSchema(`
         deleteuvelocity(id: String): Int, 
         deletetvelocity(id: String): Int,
         deleteUserFromProject(userId: String, projectId: String): Int,
+        deleteBoardFromProject(boardId: String, projectId: String): Int,
 
         updateuser(id: String, name: String, isAdmin: Boolean): User,
         updateproject(id: String, name: String): Project,

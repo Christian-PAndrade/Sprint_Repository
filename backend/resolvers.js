@@ -523,6 +523,16 @@ const resolvers = {
     return results.deletedCount;
   },
 
+  // Delete Board From Project
+  deleteBoardFromProject: async (args) => {
+    let db = await rts.loadDB();
+    let results = await rts.deleteOne(db, "Boards", {
+      _id: mongo.ObjectID.createFromHexString(args.boardId),
+      board_projectId: mongo.ObjectID.createFromHexString(args.projectId),
+    });
+    return results.deletedCount;
+  },
+
   //
   // Updates
   //
