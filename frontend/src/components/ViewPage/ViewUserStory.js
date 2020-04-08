@@ -1,4 +1,5 @@
 import React, { useReducer, useEffect } from "react";
+import theme from "../../styles/theme";
 import {
   Button,
   Card,
@@ -12,7 +13,7 @@ import {
   TableRow,
   Paper,
   MuiThemeProvider,
-  TextField
+  TextField,
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
@@ -21,7 +22,7 @@ const ViewUserStory = () => {
     userStories: [],
     userStory: {},
     sprintName: null,
-    tasks: []
+    tasks: [],
   };
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
@@ -30,7 +31,7 @@ const ViewUserStory = () => {
     fetchAllUserStories();
   }, []);
 
-  const handleClick = value => {
+  const handleClick = (value) => {
     fetchUserStory(value);
   };
 
@@ -49,20 +50,20 @@ const ViewUserStory = () => {
             estimate
             hoursWorked
             reestimate
-            }}`
-        })
+            }}`,
+        }),
       });
       let json = await response.json();
 
       setState({
-        userStories: json.data.userstories
+        userStories: json.data.userstories,
       });
     } catch (err) {
       console.log(err);
     }
   };
 
-  const fetchUserStory = async value => {
+  const fetchUserStory = async (value) => {
     try {
       if (value) {
         const query = `{ usbyname(name: "${value}") {
@@ -81,13 +82,13 @@ const ViewUserStory = () => {
           method: "POST",
           headers: { "Content-Type": "application/json; charset=utf-8" },
           body: JSON.stringify({
-            query: query
-          })
+            query: query,
+          }),
         });
         let json = await response.json();
 
         setState({ userStory: json.data.usbyname });
-
+        console.log(json.data.usbyname);
         await fetchAdditional(json.data.usbyname);
       } else {
         setState({ userStory: {} });
@@ -97,34 +98,36 @@ const ViewUserStory = () => {
     }
   };
 
-  const fetchAdditional = async us => {
+  const fetchAdditional = async (us) => {
     try {
       // get sprint by id
-      const querySprint = `{ boardbyid(id: "${us.userStory_boardId}") {name}}`;
-      let responseSprint = await fetch("http://localhost:5000/graphql", {
-        method: "POST",
-        headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify({
-          query: querySprint
-        })
-      });
+      // const querySprint = `{ boardbyid(id: "${us.userStory_boardId}") {name}}`;
+      // let responseSprint = await fetch("http://localhost:5000/graphql", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json; charset=utf-8" },
+      //   body: JSON.stringify({
+      //     query: querySprint,
+      //   }),
+      // });
 
-      let json = await responseSprint.json();
-      setState({ sprintName: json.data.boardbyid.name });
+      // let json = await responseSprint.json();
+      // console.log(json.data);
+      // setState({ sprintName: json.data.boardbyid.name });
 
+      console.log(us);
       // Get tasks for that board -- taskbyboard(boardid: String): [Task],
-      const queryTasks = `{ taskbyboard(boardid: "${us.userStory_boardId}") {name status}}`;
+      const queryTasks = `{ taskbyuserstory(userStoryId: "${us._id}") {name, creationDate, completionDate, status, estimate}}`;
       let responseTasks = await fetch("http://localhost:5000/graphql", {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
-          query: queryTasks
-        })
+          query: queryTasks,
+        }),
       });
 
       let jsonTasks = await responseTasks.json();
-      console.log(jsonTasks.data.taskbyboard);
-      setState({ tasks: jsonTasks.data.taskbyboard });
+      console.log(jsonTasks.data.taskbyuserstory);
+      setState({ tasks: jsonTasks.data.taskbyuserstory });
     } catch (err) {
       console.log(err);
     }
@@ -137,38 +140,45 @@ const ViewUserStory = () => {
         <CardContent>
           <TableContainer>
             <Table>
-              <TableHead>
-                <TableRow>
+              <TableHead></TableHead>
+              <TableBody>
+                <TableRow key={Math.random()}>
                   <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                     Name:
                   </TableCell>
                   <TableCell>{state.userStory.name}</TableCell>
+                </TableRow>
+                <TableRow key={Math.random()}>
                   <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                     Status:
                   </TableCell>
                   <TableCell>{state.userStory.status}</TableCell>
                 </TableRow>
-                <TableRow>
+                <TableRow key={Math.random()}>
                   <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                     Created On:
                   </TableCell>
                   <TableCell>{state.userStory.creationDate}</TableCell>
+                </TableRow>
+                <TableRow key={Math.random()}>
                   <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                     Completed On:
                   </TableCell>
                   <TableCell>{state.userStory.completionDate}</TableCell>
                 </TableRow>
-                <TableRow>
+                <TableRow key={Math.random()}>
                   <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                     Estimate:
                   </TableCell>
                   <TableCell>{state.userStory.estimate}</TableCell>
+                </TableRow>
+                <TableRow key={Math.random()}>
                   <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                     Sprint:
                   </TableCell>
                   <TableCell>{state.sprintName}</TableCell>
                 </TableRow>
-              </TableHead>
+              </TableBody>
             </Table>
           </TableContainer>
         </CardContent>
@@ -178,29 +188,51 @@ const ViewUserStory = () => {
 
   const Tasks = () => {
     return (
-      <Card>
-        <CardHeader title="Tasks" />
-        <CardContent>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                {state.tasks.map(task => (
-                  <TableRow key={Math.random()}>
-                    <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
-                      Task Name:
-                    </TableCell>
-                    <TableCell>{task.name}</TableCell>
-                    <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
-                      Status:
-                    </TableCell>
-                    <TableCell>{task.status}</TableCell>
-                  </TableRow>
-                ))}
-              </TableHead>
-            </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
+      <MuiThemeProvider theme={theme}>
+        <Card>
+          <CardHeader title="Tasks" />
+          <CardContent>
+            {state.tasks.map((task) => (
+              <Card style={{ marginBottom: "2%" }}>
+                <CardHeader title={task.name} />
+                <CardContent>
+                  <TableContainer>
+                    <Table>
+                      <TableHead></TableHead>
+                      <TableBody>
+                        <TableRow key={Math.random()}>
+                          <TableCell
+                            style={{ fontWeight: "bold", fontSize: 17 }}
+                          >
+                            Status:
+                          </TableCell>
+                          <TableCell>{task.status}</TableCell>
+                        </TableRow>
+                        <TableRow key={Math.random()}>
+                          <TableCell
+                            style={{ fontWeight: "bold", fontSize: 17 }}
+                          >
+                            Creation Date:
+                          </TableCell>
+                          <TableCell>{task.creationDate}</TableCell>
+                        </TableRow>
+                        <TableRow key={Math.random()}>
+                          <TableCell
+                            style={{ fontWeight: "bold", fontSize: 17 }}
+                          >
+                            Completion Date:
+                          </TableCell>
+                          <TableCell>{task.completionDate}</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </CardContent>
+              </Card>
+            ))}
+          </CardContent>
+        </Card>
+      </MuiThemeProvider>
     );
   };
 
@@ -208,11 +240,11 @@ const ViewUserStory = () => {
     <div>
       <Autocomplete
         id="userstories"
-        options={[...state.userStories.map(us => us.name)]}
-        getOptionLabel={option => option}
+        options={[...state.userStories.map((us) => us.name)]}
+        getOptionLabel={(option) => option}
         onChange={(event, value) => handleClick(value)}
         style={{ margin: "5% 0" }}
-        renderInput={param => (
+        renderInput={(param) => (
           <TextField {...param} label="User Stories" variant="outlined" />
         )}
       />

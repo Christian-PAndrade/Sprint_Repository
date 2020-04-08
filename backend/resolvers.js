@@ -172,6 +172,16 @@ const resolvers = {
       {}
     );
   },
+  taskbyuserstory: async (args) => {
+    // find tasks by userstory id
+    let db = await rts.loadDB();
+    return await rts.findAll(
+      db,
+      "Tasks",
+      { task_userStoryId: new mongo.ObjectID(args.userStoryId) },
+      {}
+    );
+  },
 
   // User Estimates
   uestimates: async () => {
