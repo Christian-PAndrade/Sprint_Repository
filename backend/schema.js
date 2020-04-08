@@ -29,6 +29,7 @@ const schema = buildSchema(`
         taskbyboard(boardid: String): [Task],
         taskbyus(userst: String): [Task],
         taskbyuser(userid: String): [Task],
+        taskbyuserstory(userStoryId: String): [Task],
 
         uestimates: [UserEstimate],
         uestbyid(id: String): UserEstimate,
