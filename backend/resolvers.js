@@ -553,14 +553,14 @@ const resolvers = {
     let newUser = {
       username: args.name,
       isAdmin: args.isAdmin,
-      projectId: new mongo.ObjectID(args.projectId),
+      _id: mongo.ObjectID.createFromHexString(args.id),
     };
 
     let results = await rts.updateOne(
       db,
       "Users",
       {
-        _id: new mongo.ObjectID(args.id),
+        _id: mongo.ObjectID.createFromHexString(args.id),
       },
       newUser
     );
