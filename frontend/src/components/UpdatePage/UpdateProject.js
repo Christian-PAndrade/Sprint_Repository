@@ -189,7 +189,7 @@ const UpdateProject = () => {
       />
       {Object.keys(state.selectedProject).length > 0 && (
         <Card>
-          <CardHeader titile="Projects" />
+          <CardHeader title="Projects" />
           <CardContent>
             <TableContainer>
               <Table>

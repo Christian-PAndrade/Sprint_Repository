@@ -153,6 +153,7 @@ const schema = buildSchema(`
         deleteBoardFromProject(boardId: String, projectId: String): Int,
 
         updateuser(id: String, name: String, isAdmin: Boolean): User,
+        updateboard(id: String, startDate: String, endDate: String, name: String, projectId: String): Board,
         updateproject(id: String, name: String): Project,
         updateuserstory(id: String, name: String, creationDate: String, completionDate: String, status: String, estimate: Float, hoursWorked: Float, reestimate: String, boarId: String): UserStory,
         updatetask(id: String, name: String, creationDate: String, completionDate: String, status: String, estimate: Float, sprint: String, userstory: String, userassigned: String): Task,
