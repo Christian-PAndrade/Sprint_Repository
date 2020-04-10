@@ -550,6 +550,7 @@ const resolvers = {
   // Update User
   updateuser: async (args) => {
     let db = await rts.loadDB();
+    console.log(db);
     let newUser = {
       username: args.name,
       isAdmin: args.isAdmin,
@@ -565,6 +566,28 @@ const resolvers = {
       newUser
     );
     return results.value ? newUser : null;
+  },
+
+  updateboard: async (args) => {
+    let db = await rts.loadDB();
+    let updateBoard = {
+      _id: mongo.ObjectID.createFromHexString(args.id),
+      startDate: args.startDate,
+      endDate: args.endDate,
+      name: args.name,
+      board_projectId: mongo.ObjectID.createFromHexString(args.projectId),
+    };
+
+    let results = await rts.updateOne(
+      db,
+      "Boards",
+      {
+        _id: mongo.ObjectID.createFromHexString(args.id),
+      },
+      updateBoard
+    );
+
+    return results.value ? updateBoard : null;
   },
 
   // Update Project

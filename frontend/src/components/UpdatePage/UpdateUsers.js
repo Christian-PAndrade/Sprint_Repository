@@ -135,7 +135,6 @@ const UpdateUsers = () => {
         }),
       });
       let json = await response.json();
-      console.log(json.data.updateuser);
       setState({
         selectedUser: json.data.updateuser,
         success: false,
