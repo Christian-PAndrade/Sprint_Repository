@@ -611,7 +611,9 @@ const resolvers = {
   // Update User Story
   updateuserstory: async (args) => {
     let db = await rts.loadDB();
+    console.log(args);
     let newUserStory = {
+      _id: mongo.ObjectID.createFromHexString(args.id),
       name: args.name,
       creationDate: args.creationDate,
       completionDate: args.completionDate,
@@ -619,14 +621,15 @@ const resolvers = {
       estimate: args.estimate,
       hoursWorked: args.hoursWorked,
       reestimate: args.reestimate,
-      userStory_boardId: new mongo.ObjectID(args.boardId),
+      userStory_boardId: mongo.ObjectID.createFromHexString(args.boardId),
+      userStory_userId: mongo.ObjectID.createFromHexString(args.userId),
     };
 
     let results = await rts.updateOne(
       db,
       "UserStories",
       {
-        _id: new mongo.ObjectID(args.id),
+        _id: mongo.ObjectID.createFromHexString(args.id),
       },
       newUserStory
     );
