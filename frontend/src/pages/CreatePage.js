@@ -4,14 +4,19 @@ import theme from "../styles/theme";
 import ProjectComponent from "../components/ProjectsComponent";
 import UserComponent from "../components/UserComponent";
 import BoardComponent from "../components/BoardComponent";
+import TaskComponent from "../components/TaskComponent";
+import UserStoryComponent from "../components/UserStoryComponent";
+import { Card, CardContent } from "@material-ui/core";
 
 function HomePage() {
   return (
     <MuiThemeProvider theme={theme}>
-      <div style={{display: "flex", justifyContent: "space-around"}}>
+      <div style={{ display: "flex", justifyContent: "space-around" }}>
         <ProjectComponent />
         <UserComponent />
-        <BoardComponent/>
+        <BoardComponent />
+        <UserStoryComponent />
+        <TaskComponent />
       </div>
     </MuiThemeProvider>
   );

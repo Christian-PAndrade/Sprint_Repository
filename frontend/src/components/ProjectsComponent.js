@@ -15,8 +15,8 @@ const useStyles = makeStyles({
   container: {
     minWidth: 300,
     maxWidth: 300,
-    minHeight: 500,
-    maxHeight: 500,
+    minHeight: 300,
+    maxHeight: 300,
     display: "flex",
     flexDirection: "row",
     justifyContent: "center"
@@ -24,7 +24,8 @@ const useStyles = makeStyles({
   textBox: {
     display: "grid",
     justifyContent: "center",
-    width: 350
+    width: 250,
+    minHeight: 600
   }
 });
 
@@ -70,7 +71,7 @@ const ProjectComponent = () => {
 
   return (
     <MuiThemeProvider theme={theme} className={classes.container}>
-      <Card style={{ marginTop: "5%" }} className={classes.textBox}>
+      <Card className={classes.textBox}>
         <CardHeader
           title="Add A Project"
           color="inherit"
