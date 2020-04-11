@@ -13,27 +13,23 @@ import AddCircle from "@material-ui/icons/AddCircle";
 
 const useStyles = makeStyles({
   container: {
-    minWidth: 300,
-    maxWidth: 300,
-    minHeight: 300,
-    maxHeight: 300,
     display: "flex",
     flexDirection: "row",
-    justifyContent: "center"
+    justifyContent: "center",
   },
   textBox: {
     display: "grid",
     justifyContent: "center",
     width: 250,
-    minHeight: 600
-  }
+    minHeight: 600,
+  },
 });
 
 const ProjectComponent = () => {
   const classes = useStyles();
   const initialState = {
     name: "",
-    hasUserProjs: false
+    hasUserProjs: false,
   };
 
   const reducer = (state, newState) => ({ ...state, ...newState });
@@ -48,55 +44,57 @@ const ProjectComponent = () => {
         origin: "*",
         method: "POST",
         headers: {
-          "Content-Type": "application/json; charset=utf-8"
+          "Content-Type": "application/json; charset=utf-8",
         },
         body: JSON.stringify({
-          query: `mutation{ addproject(name: "${state.name}"){name}}`
-        })
+          query: `mutation{ addproject(name: "${state.name}"){name}}`,
+        }),
       });
       let json = await response.json();
       setState({
-        name: ""
+        name: "",
       });
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleNameInput = e => {
+  const handleNameInput = (e) => {
     setState({ name: e.target.value });
   };
 
   const emptyorundefined = state.name === undefined || state.name === "";
 
   return (
-    <MuiThemeProvider theme={theme} className={classes.container}>
-      <Card className={classes.textBox}>
-        <CardHeader
-          title="Add A Project"
-          color="inherit"
-          style={{ textAlign: "center" }}
-        />
-        <CardContent>
-          <TextField
-            onChange={handleNameInput}
-            helperText="Enter a project name here"
-            value={state.name}
+    <MuiThemeProvider theme={theme}>
+      <div className={classes.container}>
+        <Card className={classes.textBox}>
+          <CardHeader
+            title="Add A Project"
+            color="inherit"
+            style={{ textAlign: "center" }}
           />
-          <br /> <br />
-          <br /> <br />
-          <br /> <br />
-          <br />
-          <IconButton
-            color="secondary"
-            style={{ marginTop: 50, float: "right" }}
-            onClick={onAddClicked}
-            disabled={emptyorundefined}
-          >
-            <AddCircle fontSize="large" />
-          </IconButton>
-        </CardContent>
-      </Card>
+          <CardContent>
+            <TextField
+              onChange={handleNameInput}
+              helperText="Enter a project name here"
+              value={state.name}
+            />
+            <br /> <br />
+            <br /> <br />
+            <br /> <br />
+            <br />
+            <IconButton
+              color="secondary"
+              style={{ marginTop: 50, float: "right" }}
+              onClick={onAddClicked}
+              disabled={emptyorundefined}
+            >
+              <AddCircle fontSize="large" />
+            </IconButton>
+          </CardContent>
+        </Card>
+      </div>
     </MuiThemeProvider>
   );
 };
