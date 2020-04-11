@@ -18,8 +18,8 @@ const useStyles = makeStyles({
   container: {
     minWidth: 100,
     maxWidth: 300,
-    minHeight: 500,
-    maxHeight: 500,
+    minHeight: 1000,
+    maxHeight: 1000,
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
@@ -31,33 +31,38 @@ const useStyles = makeStyles({
   },
 });
 
-const BoardComponent = () => {
+const TaskComponent = () => {
   const classes = useStyles();
   const initialState = {
     name: "",
-    projects: [],
-    projectID: "",
+    stories: [],
     clear: false,
+    estimate: 0,
+    storySelected: false,
+    selectedUser: "",
+    story: "",
   };
 
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    fetchProjects();
+    fetchUserStories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const fetchProjects = async () => {
+  const fetchUserStories = async () => {
     try {
       let response = await fetch("http://localhost:5000/graphql", {
         origin: "*",
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify({ query: `query{projects{_id,name}}` }),
+        body: JSON.stringify({
+          query: `query{userstories{_id,name,creationDate,completionDate,status,estimate,hoursWorked,reestimate,userStory_boardId,userStory_userId}}`,
+        }),
       });
       let json = await response.json();
       setState({
-        projects: json.data.projects,
+        stories: json.data.userstories,
       });
     } catch (error) {
       console.log(error);
@@ -91,13 +96,16 @@ const BoardComponent = () => {
           "Content-Type": "application/json; charset=utf-8",
         },
         body: JSON.stringify({
-          query: `mutation{ addboard(startDate: "${dateString}", name: "${state.name}", board_projectId: "${state.projectID}"){startDate, name, board_projectId}}`,
+          query: `mutation{ addtask(name: "${state.name}", creationDate: "${dateString}", completionDate: "", status: "Open", estimate: ${state.estimate}, sprint: "${state.story.userStory_boardId}", userstory: "${state.story._id}", userassigned: "${state.selectedUser._id}"){_id,name,creationDate,completionDate,status,estimate,task_sprint,task_userStoryId,task_assignedToId}}`,
         }),
       });
       let json = await response.json();
+      console.log(json);
       setState({
         name: "",
-        projectID: "",
+        storySelected: false,
+        selectedUser: "",
+        estimate: 0,
         clear: !state.clear,
       });
     } catch (error) {
@@ -105,9 +113,23 @@ const BoardComponent = () => {
     }
   };
 
-  const getProjectID = async (e, v) => {
+  const getUserId = async (e, v) => {
+    setState({ story: v });
     try {
-      setState({ projectID: v._id });
+      let response = await fetch("http://localhost:5000/graphql", {
+        origin: "*",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: JSON.stringify({
+          query: `{ userbyid(id: "${v.userStory_userId}"){_id, username, isAdmin}}`,
+        }),
+      });
+      let json = await response.json();
+      console.log(json);
+
+      setState({ selectedUser: json.data.userbyid, storySelected: true });
     } catch (error) {
       console.log(error);
     }
@@ -117,44 +139,57 @@ const BoardComponent = () => {
     setState({ name: e.target.value });
   };
 
+    const handleEstimateInput = (e) => {
+      setState({ estimate: e.target.value });
+    };
+
   const emptyorundefined = state.name === undefined || state.name === "";
 
   return (
     <MuiThemeProvider theme={theme} className={classes.container}>
-      <Card className={classes.textBox}>
+      <Card  className={classes.textBox}>
         <CardHeader
-          title="Add A Board"
+          title="Add A Task"
           color="inherit"
           style={{ textAlign: "center" }}
         />
         <CardContent>
           <TextField
             onChange={handleNameInput}
-            helperText="Enter a board name here"
+            helperText="Enter a task name here"
             value={state.name}
           />
+          <br />
+          <TextField
+            onChange={handleEstimateInput}
+            helperText="Enter estimated hours"
+            value={state.estimate}
+          />
           <br /> <br />
-          <Typography>Find a project in the system: </Typography>
+          <Typography>Find a user story in the system: </Typography>
           <br />
           <Autocomplete
             key={state.clear}
-            id="projects"
-            options={state.projects.map((projects) => projects)}
+            id="stories"
+            options={state.stories.map((story) => story)}
             onChange={(event, value) => {
-              getProjectID(event, value);
+              getUserId(event, value);
             }}
-            getOptionLabel={(projects) => projects.name}
+            getOptionLabel={(story) => story.name}
             style={{ width: 300 }}
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="current projects"
+                label="current stories"
                 variant="outlined"
                 fullWidth
               />
             )}
           />
-          <br />{" "}
+          <br />
+          {state.storySelected && (
+            <Typography>User assigned to this User Story: {state.selectedUser.username} </Typography>
+          )}
           <IconButton
             color="secondary"
             style={{ marginTop: 50, float: "right" }}
@@ -169,4 +204,4 @@ const BoardComponent = () => {
   );
 };
 
-export default BoardComponent;
+export default TaskComponent;

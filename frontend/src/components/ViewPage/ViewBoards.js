@@ -86,7 +86,6 @@ const ViewBoards = () => {
     }
   };     
 
-
 const fetchProject = async project => {
       try {
         // get sprint by id

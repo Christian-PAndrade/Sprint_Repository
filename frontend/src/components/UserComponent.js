@@ -15,8 +15,8 @@ const useStyles = makeStyles({
   container: {
     minWidth: 100,
     maxWidth: 300,
-    minHeight: 1000,
-    maxHeight: 1000,  
+    minHeight: 300,
+    maxHeight: 300,  
     display: "flex",
     flexDirection: "row",
     justifyContent: "center"
@@ -24,7 +24,8 @@ const useStyles = makeStyles({
   textBox: {
     display: "grid",
     justifyContent: "center",
-    width: 350
+    width: 250,
+    minHeight: 600
   },
 });
 
@@ -86,7 +87,7 @@ const UserComponent = () => {
   return (
     <MuiThemeProvider theme={theme} className={classes.container}>
       {" "}
-      <Card style={{ marginTop: "5%" }} className={classes.textBox}>
+      <Card className={classes.textBox}>
         {" "}
         <CardHeader
           title="Add A User"

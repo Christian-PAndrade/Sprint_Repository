@@ -51,6 +51,7 @@ const UpdateUserStory = () => {
         }),
       });
       let json = await response.json();
+      console.log(json);
       let allStoryData = [];
 
       for (let i = 0; i < json.data.userstories.length; i++) {

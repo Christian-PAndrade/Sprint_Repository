@@ -360,7 +360,8 @@ const resolvers = {
       estimate: args.estimate,
       hoursWorked: args.hoursWorked,
       reestimate: args.reestimate,
-      userStory_boardId: new mongo.ObjectID(args.boardId),
+      userStory_boardId: new mongo.ObjectID(args.userStory_boardId),
+      userStory_userId: new mongo.ObjectID(args.userStory_userId),
     };
 
     let results = await rts.addOne(db, "UserStories", userStory);

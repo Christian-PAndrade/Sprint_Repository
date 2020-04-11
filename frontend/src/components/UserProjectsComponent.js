@@ -20,17 +20,15 @@ const useStyles = makeStyles({
     maxWidth: 300,
     minHeight: 1000,
     maxHeight: 1000,
-    display: "grid",
-    justifyContent: "center"
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
   },
   textBox: {
     display: "grid",
-    justifyContent: "center"
+    justifyContent: "center",
+    minHeight: 600,
   },
-  formControl: {
-    margin: theme.spacing(1),
-    minWidth: 160
-  }
 });
 
 const ProjectComponent = () => {
@@ -138,7 +136,7 @@ const ProjectComponent = () => {
   return (
     <MuiThemeProvider theme={theme} className={classes.container}>
       {" "}
-      <Card style={{ marginTop: "10%" }} className={classes.textBox}>
+      <Card className={classes.textBox}>
         {" "}
         <CardHeader
           title="Add A Project"
