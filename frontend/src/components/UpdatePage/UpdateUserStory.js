@@ -6,7 +6,6 @@ import {
   CardContent,
   TableContainer,
   Table,
-  TableHead,
   TableBody,
   TableRow,
   TableCell,
@@ -245,7 +244,7 @@ const UpdateUserStory = () => {
           <TextField {...param} label="User Stories" variant="outlined" />
         )}
       />
-      {Object.keys(state.selectedStory).length > 0 && (
+      {state.selectedStory && Object.keys(state.selectedStory).length > 0 && (
         <Card>
           <CardHeader title={state.selectedStory.name} />
           <CardContent>

@@ -27,7 +27,7 @@ const useStyles = makeStyles({
   textBox: {
     display: "grid",
     justifyContent: "center",
-    minHeight: 600
+    minHeight: 600,
   },
 });
 
@@ -139,67 +139,71 @@ const TaskComponent = () => {
     setState({ name: e.target.value });
   };
 
-    const handleEstimateInput = (e) => {
-      setState({ estimate: e.target.value });
-    };
+  const handleEstimateInput = (e) => {
+    setState({ estimate: e.target.value });
+  };
 
   const emptyorundefined = state.name === undefined || state.name === "";
 
   return (
-    <MuiThemeProvider theme={theme} className={classes.container}>
-      <Card  className={classes.textBox}>
-        <CardHeader
-          title="Add A Task"
-          color="inherit"
-          style={{ textAlign: "center" }}
-        />
-        <CardContent>
-          <TextField
-            onChange={handleNameInput}
-            helperText="Enter a task name here"
-            value={state.name}
+    <MuiThemeProvider theme={theme}>
+      <div className={classes.container}>
+        <Card className={classes.textBox}>
+          <CardHeader
+            title="Add A Task"
+            color="inherit"
+            style={{ textAlign: "center" }}
           />
-          <br />
-          <TextField
-            onChange={handleEstimateInput}
-            helperText="Enter estimated hours"
-            value={state.estimate}
-          />
-          <br /> <br />
-          <Typography>Find a user story in the system: </Typography>
-          <br />
-          <Autocomplete
-            key={state.clear}
-            id="stories"
-            options={state.stories.map((story) => story)}
-            onChange={(event, value) => {
-              getUserId(event, value);
-            }}
-            getOptionLabel={(story) => story.name}
-            style={{ width: 300 }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="current stories"
-                variant="outlined"
-                fullWidth
-              />
+          <CardContent>
+            <TextField
+              onChange={handleNameInput}
+              helperText="Enter a task name here"
+              value={state.name}
+            />
+            <br />
+            <TextField
+              onChange={handleEstimateInput}
+              helperText="Enter estimated hours"
+              value={state.estimate}
+            />
+            <br /> <br />
+            <Typography>Find a user story in the system: </Typography>
+            <br />
+            <Autocomplete
+              key={state.clear}
+              id="stories"
+              options={state.stories.map((story) => story)}
+              onChange={(event, value) => {
+                getUserId(event, value);
+              }}
+              getOptionLabel={(story) => story.name}
+              style={{ width: 300 }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="current stories"
+                  variant="outlined"
+                  fullWidth
+                />
+              )}
+            />
+            <br />
+            {state.storySelected && (
+              <Typography>
+                User assigned to this User Story: {state.selectedUser.username}{" "}
+              </Typography>
             )}
-          />
-          <br />
-          {state.storySelected && (
-            <Typography>User assigned to this User Story: {state.selectedUser.username} </Typography>
-          )}
-          <IconButton
-            color="secondary"
-            style={{ marginTop: 50, float: "right" }}
-            onClick={onAddClicked}
-            disabled={emptyorundefined}
-          >
-            <AddCircle fontSize="large" />
-          </IconButton>
-        </CardContent>
-      </Card>
+            <IconButton
+              color="secondary"
+              style={{ marginTop: 50, float: "right" }}
+              onClick={onAddClicked}
+              disabled={emptyorundefined}
+            >
+              <AddCircle fontSize="large" />
+            </IconButton>
+          </CardContent>
+        </Card>
+      </div>
     </MuiThemeProvider>
   );
 };

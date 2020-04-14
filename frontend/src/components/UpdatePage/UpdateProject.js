@@ -6,13 +6,10 @@ import {
   CardContent,
   TableContainer,
   Table,
-  TableHead,
   TableBody,
   TableRow,
   TableCell,
   TextField,
-  Select,
-  MenuItem,
   Button,
 } from "@material-ui/core";
 
@@ -80,7 +77,7 @@ const UpdateProject = () => {
           "Content-Type": "application/json; charset=utf-8",
         },
         body: JSON.stringify({
-          query: `{boardbyproj(projid:\"${value._id}\"){_id,startDate,endDate,name, board_projectId}}`,
+          query: `{boardbyproj(projid:"${value._id}"){_id,startDate,endDate,name, board_projectId}}`,
         }),
       });
       let json = await response.json();
@@ -99,7 +96,7 @@ const UpdateProject = () => {
           "Content-Type": "application/json; charset=utf-8",
         },
         body: JSON.stringify({
-          query: `{usersbyproject(projectId:\"${v._id}\"){_id,lookupUserId,lookupProjectId}}`,
+          query: `{usersbyproject(projectId:"${v._id}"){_id,lookupUserId,lookupProjectId}}`,
         }),
       });
       let json = await response.json();
@@ -113,7 +110,7 @@ const UpdateProject = () => {
             "Content-Type": "application/json; charset=utf-8",
           },
           body: JSON.stringify({
-            query: `{userbyid(id:\"${json.data.usersbyproject[i].lookupUserId}\"){_id,username,isAdmin}}`,
+            query: `{userbyid(id:"${json.data.usersbyproject[i].lookupUserId}"){_id,username,isAdmin}}`,
           }),
         });
 
@@ -187,7 +184,7 @@ const UpdateProject = () => {
           <TextField {...param} label="Projects" variant="outlined" />
         )}
       />
-      {Object.keys(state.selectedProject).length > 0 && (
+      {state.selectedProject && Object.keys(state.selectedProject).length > 0 && (
         <Card>
           <CardHeader title="Projects" />
           <CardContent>

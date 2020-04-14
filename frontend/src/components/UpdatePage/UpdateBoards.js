@@ -6,13 +6,10 @@ import {
   CardContent,
   TableContainer,
   Table,
-  TableHead,
   TableBody,
   TableRow,
   TableCell,
   TextField,
-  Select,
-  MenuItem,
   Button,
 } from "@material-ui/core";
 import { Alert, AlertTitle } from "@material-ui/lab";
@@ -180,7 +177,7 @@ const UpdateBoards = () => {
           <TextField {...param} label="Boards" variant="outlined" />
         )}
       />
-      {Object.keys(state.selectedBoard).length > 0 && (
+      {state.selectedBoard && Object.keys(state.selectedBoard).length > 0 && (
         <Card>
           <CardHeader title="Board" />
           <CardContent>

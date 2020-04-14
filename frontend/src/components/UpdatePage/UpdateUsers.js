@@ -6,7 +6,6 @@ import {
   Table,
   TableCell,
   TableContainer,
-  TableHead,
   TableBody,
   TableRow,
   TextField,
@@ -205,7 +204,7 @@ const UpdateUsers = () => {
           <TextField {...param} label="Users" variant="outlined" />
         )}
       />
-      {Object.keys(state.selectedUser).length > 0 && (
+      {state.selectedUser && Object.keys(state.selectedUser).length > 0 && (
         <div>
           <div>
             <Card>

@@ -223,7 +223,7 @@ const UpdateSubTask = () => {
         }),
       });
       let json = await response.json();
-
+      console.log({ data: json.data.updatetask });
       setState({ selectedTask: json.data.updatetask });
     } catch (err) {
       console.log(err);
@@ -262,8 +262,9 @@ const UpdateSubTask = () => {
 
   // Decides whether or not to show complete button
   const showComplete =
-    state.selectedTask.completionDate === null ||
-    state.selectedTask.completionDate === "";
+    state.selectedTask &&
+    (state.selectedTask.completionDate === null ||
+      state.selectedTask.completionDate === "");
 
   return (
     <div>
@@ -277,7 +278,7 @@ const UpdateSubTask = () => {
           <TextField {...param} label="Tasks" variant="outlined" />
         )}
       />
-      {Object.keys(state.selectedTask).length > 0 && (
+      {state.selectedTask && Object.keys(state.selectedTask).length > 0 && (
         <Card>
           <CardHeader title="Tasks" />
           <CardContent>
