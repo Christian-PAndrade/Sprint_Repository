@@ -21,6 +21,8 @@ const schema = buildSchema(`
         usbyid(id: String): UserStory,
         usbystatus(status: String): [UserStory],
         usbyboard(boardid: String): [UserStory],
+        usbyuser(userId: String): [UserStory],
+        usbyuserandboard(userId: String, boardId: String): [UserStory]
 
         tasks: [Task],
         taskbyname(name: String): Task,
@@ -91,6 +93,7 @@ const schema = buildSchema(`
         completionDate: String
         status: String
         estimate: Float
+        timeWorked: Float
         task_sprint: String
         task_userStoryId: String
         task_assignedToId: String
@@ -157,7 +160,7 @@ const schema = buildSchema(`
         updateboard(id: String, startDate: String, endDate: String, name: String, projectId: String): Board,
         updateproject(id: String, name: String): Project,
         updateuserstory(id: String, name: String, creationDate: String, completionDate: String, status: String, estimate: Float, hoursWorked: Float, reestimate: String, boardId: String, userId: String): UserStory,
-        updatetask(id: String, name: String, creationDate: String, completionDate: String, status: String, estimate: Float, sprint: String, userstory: String, userassigned: String): Task,
+        updatetask(id: String, name: String, creationDate: String, completionDate: String, status: String, estimate: Float, timeWorked: Float, sprint: String, userstory: String, userassigned: String): Task,
         updateuestimate(id: String, estimate: Float, actual: Float, accuracy: Float, board: String) : UserEstimate,
         updatetestimate(id: String, accuracy: Float, boardid: String) : TeamEstimate,
         updateuvelocity(id: String, velocity: Float, userid: String, boardid: String): UserVelocity,
@@ -165,6 +168,7 @@ const schema = buildSchema(`
         updateuserproject(id: String, userId: String, projectId: String): UserProjectLookup,
         
         updateCompleteDateTask(id: String): Task
+        logTimeToTask(id: String, time: Float): Task
     }
 `);
 

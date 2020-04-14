@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -15,7 +15,13 @@ import {
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
+import DialogComp from "../Modal";
+
 const UpdateSubTask = () => {
+  // for modal
+  const [open, setOpen] = useState(false);
+  const [newWorkedHours, setNewWorkedHours] = useState(0);
+
   const initialState = {
     tasks: [],
     userStories: [],
@@ -47,14 +53,13 @@ const UpdateSubTask = () => {
                       completionDate
                       status
                       estimate
-                      task_sprint
+                      timeWorked
                       task_userStoryId
                       task_assignedToId
                     }}`,
         }),
       });
       let json = await response.json();
-
       setState({
         tasks: json.data.tasks,
       });
@@ -155,17 +160,7 @@ const UpdateSubTask = () => {
     setState({
       selectedTask: {
         ...state.selectedTask,
-        userStoryId: e.target.value,
-      },
-    });
-  };
-
-  //sprint/board
-  const handleSClick = (e) => {
-    setState({
-      selectedTask: {
-        ...state.selectedTask,
-        sprintId: e.target.value,
+        task_userStoryId: e.target.value,
       },
     });
   };
@@ -175,7 +170,7 @@ const UpdateSubTask = () => {
     setState({
       selectedTask: {
         ...state.selectedTask,
-        userId: e.target.value,
+        task_assignedToId: e.target.value,
       },
     });
   };
@@ -190,10 +185,12 @@ const UpdateSubTask = () => {
         completionDate,
         status,
         estimate,
-        task_sprint,
+        timeWorked,
         task_userStoryId,
         task_assignedToId,
       } = state.selectedTask;
+
+      console.log(completionDate);
 
       let response = await fetch("http://localhost:5000/graphql", {
         method: "POST",
@@ -203,10 +200,12 @@ const UpdateSubTask = () => {
             id: "${_id}",
             name: "${name}", 
             creationDate: "${creationDate}", 
-            completionDate: "${completionDate}",
+            completionDate: ${
+              completionDate ? '"' + completionDate + '"' : null
+            },
             status: "${status}",
             estimate: ${estimate},
-            sprint: "${task_sprint}",
+            timeWorked: ${timeWorked},
             userstory: "${task_userStoryId}",
             userassigned: "${task_assignedToId}"
           ) {
@@ -216,14 +215,13 @@ const UpdateSubTask = () => {
               completionDate
               status
               estimate
-              task_sprint
+              timeWorked
               task_userStoryId
               task_assignedToId
           }}`,
         }),
       });
       let json = await response.json();
-      console.log({ data: json.data.updatetask });
       setState({ selectedTask: json.data.updatetask });
     } catch (err) {
       console.log(err);
@@ -246,7 +244,7 @@ const UpdateSubTask = () => {
               completionDate
               status
               estimate
-              task_sprint
+              timeWorked
               task_userStoryId
               task_assignedToId
           }}`,
@@ -255,6 +253,40 @@ const UpdateSubTask = () => {
 
       let json = await response.json();
       setState({ selectedTask: json.data.updateCompleteDateTask });
+    } catch (ex) {
+      console.log(ex);
+    }
+  };
+
+  const LogTime = async () => {
+    // Closes modal
+    setOpen(false);
+
+    try {
+      let response = await fetch("http://localhost:5000/graphql", {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: `mutation { logTimeToTask (
+            id: "${state.selectedTask._id}",
+            time: ${newWorkedHours}
+          ) {
+              _id
+              name
+              creationDate
+              completionDate
+              status
+              estimate
+              timeWorked
+              task_userStoryId
+              task_assignedToId
+          }}`,
+        }),
+      });
+
+      let json = await response.json();
+      console.log(json.data.logTimeToTask);
+      setState({ selectedTask: json.data.logTimeToTask });
     } catch (ex) {
       console.log(ex);
     }
@@ -360,23 +392,6 @@ const UpdateSubTask = () => {
                   </TableRow>
                   <TableRow>
                     <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
-                      Sprint:
-                    </TableCell>
-                    <TableCell>
-                      <Select
-                        fullWidth
-                        id="tasks_sprint"
-                        value={state.selectedTask.task_sprint}
-                        onChange={(e) => handleSClick(e)}
-                      >
-                        {state.sprints.map((us, index) => (
-                          <MenuItem key={index} value={us._id}>
-                            {us.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </TableCell>
-                    <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                       User Assigned:
                     </TableCell>
                     <TableCell>
@@ -392,6 +407,24 @@ const UpdateSubTask = () => {
                           </MenuItem>
                         ))}
                       </Select>
+                    </TableCell>
+                    <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                      Hours Worked:
+                    </TableCell>
+                    <TableCell>
+                      <TextField
+                        fullWidth
+                        disabled
+                        value={state.selectedTask.timeWorked}
+                        onChange={(e) =>
+                          setState({
+                            selectedTask: {
+                              ...state.selectedTask,
+                              timeWorked: e.target.value,
+                            },
+                          })
+                        }
+                      />
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -411,6 +444,13 @@ const UpdateSubTask = () => {
               >
                 Update
               </Button>
+              <Button
+                onClick={() => setOpen(true)}
+                variant="contained"
+                color="primary"
+              >
+                Log Time
+              </Button>
               {showComplete && (
                 <Button
                   onClick={handleComplete}
@@ -422,6 +462,29 @@ const UpdateSubTask = () => {
               )}
             </div>
           </CardContent>
+          <DialogComp
+            open={open}
+            handleCloseDialog={() => setOpen(false)}
+            title="Log Hours"
+            content={
+              <div style={{ display: "flex", flexDirection: "column" }}>
+                <TextField
+                  type="number"
+                  inputProps={{ min: "0" }}
+                  value={newWorkedHours}
+                  onChange={(e) => setNewWorkedHours(e.target.value)}
+                />
+                <Button
+                  onClick={LogTime}
+                  variant="contained"
+                  color="primary"
+                  style={{ marginTop: "5%" }}
+                >
+                  Log Time
+                </Button>
+              </div>
+            }
+          />
         </Card>
       )}
     </div>

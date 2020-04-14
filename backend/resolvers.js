@@ -118,6 +118,27 @@ const resolvers = {
       {}
     );
   },
+  usbyuser: async (args) => {
+    let db = await rts.loadDB();
+    return await rts.findAll(
+      db,
+      "UserStories",
+      { userStory_userId: new mongo.ObjectID(args.userId) },
+      {}
+    );
+  },
+  usbyuserandboard: async (args) => {
+    let db = await rts.loadDB();
+    return await rts.findAll(
+      db,
+      "UserStories",
+      {
+        userStory_userId: new mongo.ObjectID(args.userId),
+        userStory_boardId: new mongo.ObjectID(args.boardId),
+      },
+      {}
+    );
+  },
 
   // Tasks
   tasks: async () => {
@@ -756,6 +777,70 @@ const resolvers = {
     );
 
     return results.value ? results.value : null;
+  },
+
+  // Set Completed date
+  updateCompleteDateTask: async (args) => {
+    let db = await rts.loadDB();
+    let completionDate = moment().format("YYYY-MM-DD");
+
+    let results = await rts.updateOne(
+      db,
+      "Tasks",
+      {
+        _id: new mongo.ObjectID(args.id),
+      },
+      { completionDate }
+    );
+
+    return results.value ? results.value : null;
+  },
+
+  // Logs time to a task
+  logTimeToTask: async (args) => {
+    let db = await rts.loadDB();
+
+    // Get current worked hours
+    let currTask = await rts.findOne(db, "Tasks", {
+      _id: new mongo.ObjectID(args.id),
+    });
+
+    let timeWorked = currTask.timeWorked;
+
+    timeWorked += args.time;
+
+    console.log({ currTask, timeWorked });
+
+    let results = await rts.updateOne(
+      db,
+      "Tasks",
+      { _id: new mongo.ObjectID(args.id) },
+      { timeWorked }
+    );
+
+    // Fetch new data
+    if (results.value) {
+      return await rts.findOne(db, "Tasks", {
+        _id: new mongo.ObjectID(args.id),
+      });
+    } else {
+      return null;
+    }
+  },
+
+  // Gets all tasks for a specific user in a specific board
+  taskbyuseranduserstory: async (args) => {
+    let db = await rts.loadDB();
+
+    return await rts.findAll(
+      db,
+      "Tasks",
+      {
+        task_userStoryId: new mongo.ObjectID(args.USId),
+        task_assignedToId: new mongo.ObjectID(args.userId),
+      },
+      {}
+    );
   },
 };
 
