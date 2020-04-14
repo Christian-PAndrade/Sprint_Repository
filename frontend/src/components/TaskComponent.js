@@ -16,10 +16,6 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const useStyles = makeStyles({
   container: {
-    minWidth: 100,
-    maxWidth: 300,
-    minHeight: 1000,
-    maxHeight: 1000,
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
