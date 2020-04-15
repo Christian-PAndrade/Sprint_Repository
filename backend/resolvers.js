@@ -381,6 +381,7 @@ const resolvers = {
       estimate: args.estimate,
       hoursWorked: args.hoursWorked,
       reestimate: args.reestimate,
+      storyPoints: args.storyPoints,
       userStory_boardId: new mongo.ObjectID(args.userStory_boardId),
       userStory_userId: new mongo.ObjectID(args.userStory_userId),
     };
@@ -643,6 +644,7 @@ const resolvers = {
       estimate: args.estimate,
       hoursWorked: args.hoursWorked,
       reestimate: args.reestimate,
+      storyPoints: args.storyPoints,
       userStory_boardId: mongo.ObjectID.createFromHexString(args.boardId),
       userStory_userId: mongo.ObjectID.createFromHexString(args.userId),
     };

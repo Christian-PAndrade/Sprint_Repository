@@ -50,6 +50,7 @@ const ViewUserStory = () => {
             estimate
             hoursWorked
             reestimate
+            storyPoints
             }}`,
         }),
       });
@@ -75,6 +76,7 @@ const ViewUserStory = () => {
                 estimate
                 hoursWorked
                 reestimate
+                storyPoints
                 userStory_boardId
           }}`;
 
@@ -100,21 +102,6 @@ const ViewUserStory = () => {
 
   const fetchAdditional = async (us) => {
     try {
-      // get sprint by id
-      // const querySprint = `{ boardbyid(id: "${us.userStory_boardId}") {name}}`;
-      // let responseSprint = await fetch("http://localhost:5000/graphql", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json; charset=utf-8" },
-      //   body: JSON.stringify({
-      //     query: querySprint,
-      //   }),
-      // });
-
-      // let json = await responseSprint.json();
-      // console.log(json.data);
-      // setState({ sprintName: json.data.boardbyid.name });
-
-      console.log(us);
       // Get tasks for that board -- taskbyboard(boardid: String): [Task],
       const queryTasks = `{ taskbyuserstory(userStoryId: "${us._id}") {name, creationDate, completionDate, status, estimate}}`;
       let responseTasks = await fetch("http://localhost:5000/graphql", {
@@ -142,37 +129,43 @@ const ViewUserStory = () => {
             <Table>
               <TableHead></TableHead>
               <TableBody>
-                <TableRow key={Math.random()}>
+                <TableRow>
                   <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                     Name:
                   </TableCell>
                   <TableCell>{state.userStory.name}</TableCell>
                 </TableRow>
-                <TableRow key={Math.random()}>
+                <TableRow>
                   <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                     Status:
                   </TableCell>
                   <TableCell>{state.userStory.status}</TableCell>
                 </TableRow>
-                <TableRow key={Math.random()}>
+                <TableRow>
                   <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                     Created On:
                   </TableCell>
                   <TableCell>{state.userStory.creationDate}</TableCell>
                 </TableRow>
-                <TableRow key={Math.random()}>
+                <TableRow>
                   <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                     Completed On:
                   </TableCell>
                   <TableCell>{state.userStory.completionDate}</TableCell>
                 </TableRow>
-                <TableRow key={Math.random()}>
+                <TableRow>
                   <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                     Estimate:
                   </TableCell>
                   <TableCell>{state.userStory.estimate}</TableCell>
                 </TableRow>
-                <TableRow key={Math.random()}>
+                <TableRow>
+                  <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                    Story Points:
+                  </TableCell>
+                  <TableCell>{state.userStory.storyPoints}</TableCell>
+                </TableRow>
+                <TableRow>
                   <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                     Sprint:
                   </TableCell>
