@@ -53,7 +53,7 @@ const TaskComponent = () => {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
-          query: `query{userstories{_id,name,creationDate,completionDate,status,estimate,hoursWorked,reestimate,userStory_boardId,userStory_userId}}`,
+          query: `query{ userstories{ _id,name,userStory_boardId,userStory_userId } }`,
         }),
       });
       let json = await response.json();

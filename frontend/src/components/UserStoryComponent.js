@@ -44,7 +44,7 @@ const UserStoryComponent = () => {
     clear: false,
     estimate: 0,
     userHasProjects: false,
-    projectHasBoards: false,
+    storyPoints: 0,
   };
 
   const reducer = (state, newState) => ({ ...state, ...newState });
@@ -88,7 +88,16 @@ const UserStoryComponent = () => {
           "Content-Type": "application/json; charset=utf-8",
         },
         body: JSON.stringify({
-          query: `mutation{ adduserstory(name: "${state.name}", creationDate: "${dateString}", completionDate: "", status: "Open", estimate: ${state.estimate}, hoursWorked: 0, reestimate: "", userStory_boardId: "${state.boardID}", userStory_userId: "${state.userID}"){name,creationDate,completionDate,status,estimate,hoursWorked,reestimate,userStory_boardId,userStory_userId}}`,
+          query: `mutation { adduserstory(
+            name: "${
+              state.name
+            }", creationDate: "${dateString}", completionDate: "", status: "Open", 
+            estimate: ${state.estimate}, hoursWorked: 0, reestimate: "", 
+            storyPoints: ${state.storyPoints}, userStory_boardId: "${
+            state.boardID ? state.boardID : null
+          }", 
+            userStory_userId: "${state.userID ? state.userID : null}")
+            {name, creationDate, completionDate, status, estimate, hoursWorked, reestimate, storyPoints, userStory_boardId, userStory_userId}}`,
         }),
       });
       let json = await response.json();
@@ -97,6 +106,8 @@ const UserStoryComponent = () => {
         name: "",
         boardID: "",
         estimate: 0,
+        storyPoints: 0,
+        userHasProjects: false,
         clear: !state.clear,
       });
     } catch (error) {
@@ -126,7 +137,22 @@ const UserStoryComponent = () => {
           flag = true;
         });
       }
-      setState({ projects: projArray, userHasProjects: flag });
+
+      // Fetch all boards
+      let responseBoards = await fetch("http://localhost:5000/graphql", {
+        origin: "*",
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: `{boards{_id, name,}}`,
+        }),
+      });
+      let jsonBoards = await responseBoards.json();
+      setState({
+        projects: projArray,
+        userHasProjects: flag,
+        boards: jsonBoards.data.boards,
+      });
     } catch (error) {
       console.log(error);
     }
@@ -149,24 +175,6 @@ const UserStoryComponent = () => {
     }
   };
 
-  const getProjectBoards = async (e, v) => {
-    console.log(v);
-    try {
-      let response = await fetch("http://localhost:5000/graphql", {
-        origin: "*",
-        method: "POST",
-        headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify({
-          query: `{boardbyproj(projid: "${v._id}"){_id, startDate, endDate, name, board_projectId}}`,
-        }),
-      });
-      let json = await response.json();
-      setState({ boards: json.data.boardbyproj, projectHasBoards: true });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const getBoardID = async (e, v) => {
     try {
       setState({ boardID: v._id });
@@ -181,6 +189,10 @@ const UserStoryComponent = () => {
 
   const handleEstimateInput = (e) => {
     setState({ estimate: e.target.value });
+  };
+
+  const handleSPInput = (e) => {
+    setState({ storyPoints: e.target.value });
   };
 
   const emptyorundefined = state.name === undefined || state.name === "";
@@ -201,12 +213,22 @@ const UserStoryComponent = () => {
           />
           <br />
           <TextField
+            type="number"
+            inputProps={{ min: "0" }}
             onChange={handleEstimateInput}
             helperText="Enter estimated hours"
             value={state.estimate}
           />
+          <br />
+          <TextField
+            type="number"
+            inputProps={{ min: "0" }}
+            onChange={handleSPInput}
+            helperText="Enter story points"
+            value={state.storyPoints}
+          />
           <br /> <br />
-          <Typography>Find a user in the system: </Typography>
+          <Typography>Assign a user: </Typography>
           <br />
           <Autocomplete
             key={state.clear}
@@ -226,35 +248,10 @@ const UserStoryComponent = () => {
               />
             )}
           />
+          <br />
           {state.userHasProjects && (
             <Fragment>
-              <br />
-              <Typography>Select a project: </Typography>
-              <br />
-              <Autocomplete
-                key={state.clear}
-                id="projects"
-                options={state.projects.map((project) => project)}
-                onChange={(event, value) => {
-                  getProjectBoards(event, value);
-                }}
-                getOptionLabel={(project) => project.name}
-                style={{ width: 300 }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="current projects"
-                    variant="outlined"
-                    fullWidth
-                  />
-                )}
-              />
-            </Fragment>
-          )}
-          <br />
-          {state.projectHasBoards && (
-            <Fragment>
-              <Typography>Find a board in the system: </Typography>
+              <Typography>Assign to a Board: </Typography>
               <br />
               <Autocomplete
                 key={state.clear}

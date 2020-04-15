@@ -82,6 +82,7 @@ const schema = buildSchema(`
         estimate: Float
         hoursWorked: Float
         reestimate: String
+        storyPoints: Float
         userStory_boardId: String
         userStory_userId: String
     }
@@ -135,7 +136,7 @@ const schema = buildSchema(`
     type Mutation {
         adduser(username: String, isAdmin: Boolean): User,
         addproject(name: String): Project,
-        adduserstory(name: String, creationDate: String, completionDate: String, status: String, estimate: Float, hoursWorked: Float, reestimate: String, userStory_boardId: String, userStory_userId: String): UserStory,
+        adduserstory(name: String, creationDate: String, completionDate: String, status: String, estimate: Float, hoursWorked: Float, reestimate: String, storyPoints: Float, userStory_boardId: String, userStory_userId: String): UserStory,
         addtask(name: String, creationDate: String, completionDate: String, status: String, estimate: Float, sprint: String, userstory: String, userassigned: String): Task,
         adduestimate(estimate: Float, actual: Float, accuracy: Float, board: String) : UserEstimate,
         addtestimate(accuracy: Float, boardid: String) : TeamEstimate,
@@ -159,7 +160,7 @@ const schema = buildSchema(`
         updateuser(id: String, name: String, isAdmin: Boolean): User,
         updateboard(id: String, startDate: String, endDate: String, name: String, projectId: String): Board,
         updateproject(id: String, name: String): Project,
-        updateuserstory(id: String, name: String, creationDate: String, completionDate: String, status: String, estimate: Float, hoursWorked: Float, reestimate: String, boardId: String, userId: String): UserStory,
+        updateuserstory(id: String, name: String, creationDate: String, completionDate: String, status: String, estimate: Float, hoursWorked: Float, reestimate: String, storyPoints: Float, boardId: String, userId: String): UserStory,
         updatetask(id: String, name: String, creationDate: String, completionDate: String, status: String, estimate: Float, timeWorked: Float, sprint: String, userstory: String, userassigned: String): Task,
         updateuestimate(id: String, estimate: Float, actual: Float, accuracy: Float, board: String) : UserEstimate,
         updatetestimate(id: String, accuracy: Float, boardid: String) : TeamEstimate,

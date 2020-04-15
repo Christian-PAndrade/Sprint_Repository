@@ -45,12 +45,11 @@ const UpdateUserStory = () => {
         body: JSON.stringify({
           query:
             "{userstories{_id, name, creationDate, completionDate, " +
-            "status, estimate, hoursWorked, reestimate, userStory_boardId " +
-            " userStory_userId}}",
+            "status, estimate, hoursWorked, reestimate, storyPoints, " +
+            "userStory_boardId, userStory_userId}}",
         }),
       });
       let json = await response.json();
-      console.log(json);
       let allStoryData = [];
 
       for (let i = 0; i < json.data.userstories.length; i++) {
@@ -74,6 +73,7 @@ const UpdateUserStory = () => {
           estimate: element.estimate,
           hoursWorked: element.hoursWorked,
           reestimate: element.reestimate,
+          storyPoints: element.storyPoints,
           creationDate: element.creationDate,
           completionDate: element.completionDate,
           status: element.status,
@@ -83,8 +83,6 @@ const UpdateUserStory = () => {
           userName: user.username,
         });
       }
-
-      console.log(allStoryData);
 
       setState({ userStories: allStoryData });
     } catch (error) {
@@ -141,6 +139,7 @@ const UpdateUserStory = () => {
       const selectedStory = state.userStories.find(
         (story) => story.name === value
       );
+
       setState({
         selectedStory,
         success: false,
@@ -179,6 +178,7 @@ const UpdateUserStory = () => {
         estimate,
         hoursWorked,
         reestimate,
+        storyPoints,
         userStory_boardId,
         userStory_userId,
       } = state.selectedStory;
@@ -198,6 +198,7 @@ const UpdateUserStory = () => {
             estimate: ${estimate},
             hoursWorked: ${hoursWorked},
             reestimate: "${reestimate}",
+            storyPoints: ${storyPoints},
             boardId: "${userStory_boardId}",
             userId: "${userStory_userId}"
           ) {
@@ -209,6 +210,7 @@ const UpdateUserStory = () => {
               estimate
               hoursWorked
               reestimate
+              storyPoints
               userStory_boardId
               userStory_userId
           }}`,
@@ -368,9 +370,24 @@ const UpdateUserStory = () => {
                         fontSize: 17,
                       }}
                     >
-                      Completion Date:
+                      Story Points:
                     </TableCell>
-                    <TableCell>{state.selectedStory.completionDate}</TableCell>
+                    <TableCell>
+                      <TextField
+                        fullWidth
+                        type="number"
+                        inputProps={{ min: "0" }}
+                        value={state.selectedStory.storyPoints}
+                        onChange={(e) =>
+                          setState({
+                            selectedStory: {
+                              ...state.selectedStory,
+                              storyPoints: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                    </TableCell>
                     <TableCell>
                       <div
                         style={{
