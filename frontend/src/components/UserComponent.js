@@ -12,11 +12,7 @@ import "../App.css";
 import AddCircle from "@material-ui/icons/AddCircle";
 
 const useStyles = makeStyles({
-  container: {
-    minWidth: 100,
-    maxWidth: 300,
-    minHeight: 300,
-    maxHeight: 300,  
+  container: { 
     display: "flex",
     flexDirection: "row",
     justifyContent: "center"
@@ -24,8 +20,8 @@ const useStyles = makeStyles({
   textBox: {
     display: "grid",
     justifyContent: "center",
-    width: 250,
-    minHeight: 600
+    width: 700,
+    minHeight:550
   },
 });
 

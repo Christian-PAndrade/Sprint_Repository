@@ -8,13 +8,15 @@ import {
   Menu,
   MenuItem,
   IconButton,
-  Typography
+  Typography,
+  Avatar,
 } from "@material-ui/core";
 import theme from "../styles/theme";
 
 import CreatePage from "./CreatePage";
 import ViewPage from "./ViewPage";
 import UpdatePage from "./UpdatePage";
+import HomeComponent from "../components/HomeComponent";
 
 function HomePage() {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -29,6 +31,7 @@ function HomePage() {
     <MuiThemeProvider theme={theme}>
       <AppBar position="static">
         <Toolbar>
+          <Avatar src={require("./img/icons8-system-task-64.png")}></Avatar>
           <Typography variant="h6" color="inherit">
             MemoryLeak
           </Typography>
@@ -65,7 +68,7 @@ function HomePage() {
         <Route path="/create" render={() => <CreatePage />} />
         <Route path="/view" render={() => <ViewPage />} />
         <Route path="/update" render={() => <UpdatePage />} />
-        <Route path="/home" component={() => <div>HomeComponent</div>} />
+        <Route path="/home" component={() => <HomeComponent />} />
       </div>
     </MuiThemeProvider>
   );

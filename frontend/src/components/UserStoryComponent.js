@@ -16,10 +16,6 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 
 const useStyles = makeStyles({
   container: {
-    minWidth: 100,
-    maxWidth: 300,
-    minHeight: 500,
-    maxHeight: 500,
     display: "flex",
     flexDirection: "row",
     justifyContent: "center",
@@ -27,7 +23,8 @@ const useStyles = makeStyles({
   textBox: {
     display: "grid",
     justifyContent: "center",
-    minHeight: 600,
+    width: 700,
+    minHeight: 550,
   },
 });
 
