@@ -91,8 +91,10 @@ const UserStoryComponent = () => {
           query: `mutation { adduserstory(
             name: "${
               state.name
-            }", creationDate: "${dateString}", completionDate: "", status: "Open", 
-            estimate: ${state.estimate}, hoursWorked: 0, reestimate: "", 
+            }", creationDate: "${dateString}", completionDate: "", 
+            status: "Open", estimate: ${
+              state.estimate
+            }, hoursWorked: 0, reestimate: "", 
             storyPoints: ${state.storyPoints}, userStory_boardId: "${
             state.boardID ? state.boardID : null
           }", 
