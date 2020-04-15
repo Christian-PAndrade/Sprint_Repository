@@ -20,8 +20,8 @@ const useStyles = makeStyles({
   textBox: {
     display: "grid",
     justifyContent: "center",
-    width: 250,
-    minHeight: 600,
+    width: 700,
+    minHeight: 550,
   },
 });
 
