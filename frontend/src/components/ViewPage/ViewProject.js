@@ -71,7 +71,7 @@ const ViewProject = () => {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
-          query: `{boardbyproj(projid:\"${value._id}\"){_id,startDate,endDate,name, board_projectId}}`,
+          query: `{boardbyproj(projid:"${value._id}"){_id,startDate,endDate,name, board_projectId}}`,
         }),
       });
       let json = await response.json();
@@ -88,7 +88,7 @@ const ViewProject = () => {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
-          query: `{usersbyproject(projectId:\"${v._id}\"){_id,lookupUserId,lookupProjectId}}`,
+          query: `{usersbyproject(projectId:"${v._id}"){_id,lookupUserId,lookupProjectId}}`,
         }),
       });
       let json = await response.json();
@@ -100,7 +100,7 @@ const ViewProject = () => {
           method: "POST",
           headers: { "Content-Type": "application/json; charset=utf-8" },
           body: JSON.stringify({
-            query: `{userbyid(id:\"${json.data.usersbyproject[i].lookupUserId}\"){_id,username,isAdmin}}`,
+            query: `{userbyid(id:"${json.data.usersbyproject[i].lookupUserId}"){_id,username,isAdmin}}`,
           }),
         });
 
@@ -122,8 +122,8 @@ const ViewProject = () => {
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
           query: `mutation{deleteUserFromProject(
-                userId:\"${user._id}\",
-                projectId: \"${projId}\")
+                userId:"${user._id}",
+                projectId: "${projId}")
               }`,
         }),
       });
@@ -162,8 +162,8 @@ const ViewProject = () => {
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
           query: `mutation{deleteBoardFromProject(
-                boardId:\"${board._id}\",
-                projectId: \"${projId}\")
+                boardId:"${board._id}",
+                projectId: "${projId}")
               }`,
         }),
       });

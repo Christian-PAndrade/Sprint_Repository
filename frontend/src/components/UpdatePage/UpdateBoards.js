@@ -80,7 +80,7 @@ const UpdateBoards = () => {
           "Content-Type": "application/json; charset=utf-8",
         },
         body: JSON.stringify({
-          query: "{projects{_id, name}}",
+          query: "{ projects { _id, name } }",
         }),
       });
       let json = await response.json();
@@ -156,13 +156,52 @@ const UpdateBoards = () => {
     }
   };
 
-  const handleCloseBoard = () => {
+  const handleCloseBoard = async () => {
+    const endDate = moment().format("YYYY-MM-DD HH:mm:ss");
     setState({
       selectedBoard: {
         ...state.selectedBoard,
-        endDate: moment().format("YYYY-MM-DD HH:mm:ss"),
+        endDate,
       },
     });
+
+    // update db
+    try {
+      const response = await fetch("http://localhost:5000/graphql", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: JSON.stringify({
+          query: `mutation { closeBoard(
+            id: "${state.selectedBoard._id}",
+            endDate: "${endDate}"
+          ) {
+            _id
+            startDate
+            endDate
+            name
+            board_projectId
+          }
+        }`,
+        }),
+      });
+
+      const json = await response.json();
+
+      // find project name
+      const allProj = await getAllProjects();
+
+      const proj = allProj.find(
+        (proj) => proj._id === json.data.closeBoard.board_projectId
+      );
+
+      setState({
+        selectedBoard: { ...json.data.closeBoard, projectName: proj.name },
+      });
+    } catch (ex) {
+      console.log(ex);
+    }
   };
 
   return (

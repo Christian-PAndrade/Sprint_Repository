@@ -27,7 +27,7 @@ const useStyles = makeStyles({
   textBox: {
     display: "grid",
     justifyContent: "center",
-    minHeight: 600
+    minHeight: 600,
   },
 });
 
@@ -72,26 +72,13 @@ const UserStoryComponent = () => {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const onAddClicked = async () => {
     let myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    // var now = new Date();
-    // var dateString =
-    //     now.getFullYear().toString() +
-    //     "-" +
-    //     ("0" + (now.getMonth() + 1)).slice(-2) +
-    //     "-" +
-    //     ("0" + now.getDate()).slice(-2) +
-    //     " " +
-    //     ("0" + now.getHours()).slice(-2) +
-    //     ":" +
-    //     ("0" + now.getMinutes()).slice(-2) +
-    //     ":" +
-    //     ("0" + now.getSeconds()).slice(-2);
-    //     console.log(dateString);
-    const dateString = moment().format("YYYY-MM-DD");
+
+    const dateString = moment().format("YYYY-MM-DD HH:mm:ss");
 
     try {
       let response = await fetch("http://localhost:5000/graphql", {
@@ -118,7 +105,7 @@ const UserStoryComponent = () => {
   };
 
   const getUserProjects = async (e, v) => {
-    setState({userID: v._id});
+    setState({ userID: v._id });
     try {
       let response = await fetch("http://localhost:5000/graphql", {
         origin: "*",
@@ -130,22 +117,22 @@ const UserStoryComponent = () => {
       });
       let json = await response.json();
 
-        let projArray = [];
-        let flag = false;
-       for (let i = 0; i < json.data.projectsbyuser.length; i++) {
-         let element = json.data.projectsbyuser[i];
-         await getProjectNames(element).then((value) => {
-            projArray.push(value);
-            flag = true;
-         });
-       }
-      setState({ projects: projArray, userHasProjects: flag});
+      let projArray = [];
+      let flag = false;
+      for (let i = 0; i < json.data.projectsbyuser.length; i++) {
+        let element = json.data.projectsbyuser[i];
+        await getProjectNames(element).then((value) => {
+          projArray.push(value);
+          flag = true;
+        });
+      }
+      setState({ projects: projArray, userHasProjects: flag });
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
-  const getProjectNames = async project => {
+  const getProjectNames = async (project) => {
     try {
       let response = await fetch("http://localhost:5000/graphql", {
         origin: "*",
@@ -164,21 +151,21 @@ const UserStoryComponent = () => {
 
   const getProjectBoards = async (e, v) => {
     console.log(v);
-     try {
-       let response = await fetch("http://localhost:5000/graphql", {
-         origin: "*",
-         method: "POST",
-         headers: { "Content-Type": "application/json; charset=utf-8" },
-         body: JSON.stringify({
-           query: `{boardbyproj(projid: "${v._id}"){_id, startDate, endDate, name, board_projectId}}`,
-         }),
-       });
-       let json = await response.json();
-       setState({ boards: json.data.boardbyproj, projectHasBoards: true });
-     } catch (error) {
-       console.log(error);
-     }
-  }
+    try {
+      let response = await fetch("http://localhost:5000/graphql", {
+        origin: "*",
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          query: `{boardbyproj(projid: "${v._id}"){_id, startDate, endDate, name, board_projectId}}`,
+        }),
+      });
+      let json = await response.json();
+      setState({ boards: json.data.boardbyproj, projectHasBoards: true });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const getBoardID = async (e, v) => {
     try {
@@ -193,8 +180,8 @@ const UserStoryComponent = () => {
   };
 
   const handleEstimateInput = (e) => {
-    setState({estimate: e.target.value});
-  }
+    setState({ estimate: e.target.value });
+  };
 
   const emptyorundefined = state.name === undefined || state.name === "";
 
@@ -212,7 +199,7 @@ const UserStoryComponent = () => {
             helperText="Enter a user story name here"
             value={state.name}
           />
-          <br/>
+          <br />
           <TextField
             onChange={handleEstimateInput}
             helperText="Enter estimated hours"

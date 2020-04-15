@@ -169,6 +169,7 @@ const schema = buildSchema(`
         
         updateCompleteDateTask(id: String): Task
         logTimeToTask(id: String, time: Float): Task
+        closeBoard(id: String, endDate: String): Board
     }
 `);
 

@@ -27,7 +27,7 @@ const useStyles = makeStyles({
   textBox: {
     display: "grid",
     justifyContent: "center",
-    minHeight: 600
+    minHeight: 600,
   },
 });
 
@@ -67,21 +67,8 @@ const BoardComponent = () => {
   const onAddClicked = async () => {
     let myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    // var now = new Date();
-    // var dateString =
-    //     now.getFullYear().toString() +
-    //     "-" +
-    //     ("0" + (now.getMonth() + 1)).slice(-2) +
-    //     "-" +
-    //     ("0" + now.getDate()).slice(-2) +
-    //     " " +
-    //     ("0" + now.getHours()).slice(-2) +
-    //     ":" +
-    //     ("0" + now.getMinutes()).slice(-2) +
-    //     ":" +
-    //     ("0" + now.getSeconds()).slice(-2);
-    //     console.log(dateString);
-    const dateString = moment().format("YYYY-MM-DD");
+
+    const dateString = moment().format("YYYY-MM-DD HH:mm:ss");
 
     try {
       let response = await fetch("http://localhost:5000/graphql", {
