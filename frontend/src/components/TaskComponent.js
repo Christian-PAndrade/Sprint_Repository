@@ -24,7 +24,7 @@ const useStyles = makeStyles({
     display: "grid",
     justifyContent: "center",
     width: 700,
-    minHeight: 550
+    minHeight: 550,
   },
 });
 
@@ -73,18 +73,17 @@ const TaskComponent = () => {
     const dateString = moment().format("YYYY-MM-DD HH:mm:ss");
 
     try {
-      let response = await fetch("http://localhost:5000/graphql", {
+      await fetch("http://localhost:5000/graphql", {
         origin: "*",
         method: "POST",
         headers: {
           "Content-Type": "application/json; charset=utf-8",
         },
         body: JSON.stringify({
-          query: `mutation{ addtask(name: "${state.name}", creationDate: "${dateString}", completionDate: "", status: "Open", estimate: ${state.estimate}, sprint: "${state.story.userStory_boardId}", userstory: "${state.story._id}", userassigned: "${state.selectedUser._id}"){_id,name,creationDate,completionDate,status,estimate,task_sprint,task_userStoryId,task_assignedToId}}`,
+          query: `mutation{ addtask(name: "${state.name}", creationDate: "${dateString}", completionDate: "", status: "Open", estimate: ${state.estimate}, timeWorked: 0, sprint: "${state.story.userStory_boardId}", userstory: "${state.story._id}", userassigned: "${state.selectedUser._id}"){_id,name,creationDate,completionDate,status,estimate,task_sprint,task_userStoryId,task_assignedToId}}`,
         }),
       });
-      let json = await response.json();
-      console.log(json);
+
       setState({
         name: "",
         storySelected: false,
@@ -111,7 +110,6 @@ const TaskComponent = () => {
         }),
       });
       let json = await response.json();
-      console.log(json);
 
       setState({ selectedUser: json.data.userbyid, storySelected: true });
     } catch (error) {

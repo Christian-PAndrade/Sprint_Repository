@@ -68,7 +68,7 @@ const BoardComponent = () => {
     const dateString = moment().format("YYYY-MM-DD HH:mm:ss");
 
     try {
-      let response = await fetch("http://localhost:5000/graphql", {
+      await fetch("http://localhost:5000/graphql", {
         origin: "*",
         method: "POST",
         headers: {
@@ -78,7 +78,7 @@ const BoardComponent = () => {
           query: `mutation{ addboard(startDate: "${dateString}", name: "${state.name}", board_projectId: "${state.projectID}"){startDate, name, board_projectId}}`,
         }),
       });
-      let json = await response.json();
+
       setState({
         name: "",
         projectID: "",
@@ -104,51 +104,53 @@ const BoardComponent = () => {
   const emptyorundefined = state.name === undefined || state.name === "";
 
   return (
-    <MuiThemeProvider theme={theme} className={classes.container}>
-      <Card className={classes.textBox}>
-        <CardHeader
-          title="Add A Board"
-          color="inherit"
-          style={{ textAlign: "center" }}
-        />
-        <CardContent>
-          <TextField
-            onChange={handleNameInput}
-            helperText="Enter a board name here"
-            value={state.name}
+    <MuiThemeProvider theme={theme}>
+      <div className={classes.container}>
+        <Card className={classes.textBox}>
+          <CardHeader
+            title="Add A Board"
+            color="inherit"
+            style={{ textAlign: "center" }}
           />
-          <br /> <br />
-          <Typography>Find a project in the system: </Typography>
-          <br />
-          <Autocomplete
-            key={state.clear}
-            id="projects"
-            options={state.projects.map((projects) => projects)}
-            onChange={(event, value) => {
-              getProjectID(event, value);
-            }}
-            getOptionLabel={(projects) => projects.name}
-            style={{ width: 300 }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="current projects"
-                variant="outlined"
-                fullWidth
-              />
-            )}
-          />
-          <br />{" "}
-          <IconButton
-            color="secondary"
-            style={{ marginTop: 50, float: "right" }}
-            onClick={onAddClicked}
-            disabled={emptyorundefined}
-          >
-            <AddCircle fontSize="large" />
-          </IconButton>
-        </CardContent>
-      </Card>
+          <CardContent>
+            <TextField
+              onChange={handleNameInput}
+              helperText="Enter a board name here"
+              value={state.name}
+            />
+            <br /> <br />
+            <Typography>Find a project in the system: </Typography>
+            <br />
+            <Autocomplete
+              key={state.clear}
+              id="projects"
+              options={state.projects.map((projects) => projects)}
+              onChange={(event, value) => {
+                getProjectID(event, value);
+              }}
+              getOptionLabel={(projects) => projects.name}
+              style={{ width: 300 }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="current projects"
+                  variant="outlined"
+                  fullWidth
+                />
+              )}
+            />
+            <br />{" "}
+            <IconButton
+              color="secondary"
+              style={{ marginTop: 50, float: "right" }}
+              onClick={onAddClicked}
+              disabled={emptyorundefined}
+            >
+              <AddCircle fontSize="large" />
+            </IconButton>
+          </CardContent>
+        </Card>
+      </div>
     </MuiThemeProvider>
   );
 };

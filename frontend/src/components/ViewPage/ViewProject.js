@@ -116,7 +116,7 @@ const ViewProject = () => {
 
   const deleteUserFromProject = async (user, projId) => {
     try {
-      let response = await fetch("http://localhost:5000/graphql", {
+      await fetch("http://localhost:5000/graphql", {
         origin: "*",
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
@@ -127,7 +127,6 @@ const ViewProject = () => {
               }`,
         }),
       });
-      let json = await response.json();
       let allProjectsData = [];
       let usersForProject = [];
 
@@ -156,7 +155,7 @@ const ViewProject = () => {
 
   const deleteBoardFromProject = async (board, projId) => {
     try {
-      let response = await fetch("http://localhost:5000/graphql", {
+      await fetch("http://localhost:5000/graphql", {
         origin: "*",
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
@@ -167,7 +166,7 @@ const ViewProject = () => {
               }`,
         }),
       });
-      let json = await response.json();
+
       let allProjectsData = [];
       let boardsForProject = [];
 
@@ -205,104 +204,106 @@ const ViewProject = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {state.projects.map((proj) => (
-              <TableRow key={proj.name}>
-                <TableCell>
-                  <Card>
-                    <CardHeader title={proj.name} />
-                    <CardContent>
-                      <TableContainer>
-                        <Table>
-                          <TableHead>
-                            <TableRow>
-                              <TableCell
-                                style={{ fontWeight: "bold", fontSize: 17 }}
-                              >
-                                User Name
-                              </TableCell>
-                              <TableCell
-                                style={{ fontWeight: "bold", fontSize: 17 }}
-                              >
-                                Option
-                              </TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {proj.users.map((user) => (
-                              <TableRow key={user.username}>
-                                <TableCell>{user.username}</TableCell>
-                                <TableCell key={user.username}>
-                                  <Button
-                                    key={user.username}
-                                    value={user}
-                                    variant="contained"
-                                    onClick={() => {
-                                      deleteUserFromProject(user, proj._id);
-                                    }}
-                                    style={{
-                                      backgroundColor: "#FF0000",
-                                      fontWeight: "bold",
-                                    }}
-                                  >
-                                    Delete
-                                  </Button>
+            {Object.keys(state.projects).length > 0 &&
+              state.projects.map((proj) => (
+                <TableRow key={proj.name}>
+                  <TableCell>
+                    <Card>
+                      <CardHeader title={proj.name} />
+                      <CardContent>
+                        <TableContainer>
+                          <Table>
+                            <TableHead>
+                              <TableRow>
+                                <TableCell
+                                  style={{ fontWeight: "bold", fontSize: 17 }}
+                                >
+                                  User Name
+                                </TableCell>
+                                <TableCell
+                                  style={{ fontWeight: "bold", fontSize: 17 }}
+                                >
+                                  Option
                                 </TableCell>
                               </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-                    </CardContent>
-                  </Card>
-                </TableCell>
-                <TableCell>
-                  <Card>
-                    <CardHeader title={proj.name} />
-                    <CardContent>
-                      <TableContainer>
-                        <Table>
-                          <TableHead>
-                            <TableRow>
-                              <TableCell
-                                style={{ fontWeight: "bold", fontSize: 17 }}
-                              >
-                                Board / Sprint
-                              </TableCell>
-                              <TableCell
-                                style={{ fontWeight: "bold", fontSize: 17 }}
-                              >
-                                Option
-                              </TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {proj.boards.map((board) => (
-                              <TableRow key={board.name}>
-                                <TableCell>{board.name}</TableCell>
-                                <TableCell>
-                                  <Button
-                                    variant="contained"
-                                    style={{
-                                      backgroundColor: "#FF0000",
-                                      fontWeight: "bold",
-                                    }}
-                                    onClick={() => {
-                                      deleteBoardFromProject(board, proj._id);
-                                    }}
-                                  >
-                                    Delete
-                                  </Button>
+                            </TableHead>
+                            <TableBody>
+                              {Object.keys(proj.users).length > 0 &&
+                                proj.users.map((user) => (
+                                  <TableRow key={user.username}>
+                                    <TableCell>{user.username}</TableCell>
+                                    <TableCell key={user.username}>
+                                      <Button
+                                        key={user.username}
+                                        value={user}
+                                        variant="contained"
+                                        onClick={() => {
+                                          deleteUserFromProject(user, proj._id);
+                                        }}
+                                        style={{
+                                          backgroundColor: "#FF0000",
+                                          fontWeight: "bold",
+                                        }}
+                                      >
+                                        Delete
+                                      </Button>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      </CardContent>
+                    </Card>
+                  </TableCell>
+                  <TableCell>
+                    <Card>
+                      <CardHeader title={proj.name} />
+                      <CardContent>
+                        <TableContainer>
+                          <Table>
+                            <TableHead>
+                              <TableRow>
+                                <TableCell
+                                  style={{ fontWeight: "bold", fontSize: 17 }}
+                                >
+                                  Board / Sprint
+                                </TableCell>
+                                <TableCell
+                                  style={{ fontWeight: "bold", fontSize: 17 }}
+                                >
+                                  Option
                                 </TableCell>
                               </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-                    </CardContent>
-                  </Card>
-                </TableCell>
-              </TableRow>
-            ))}
+                            </TableHead>
+                            <TableBody>
+                              {proj.boards.map((board) => (
+                                <TableRow key={board.name}>
+                                  <TableCell>{board.name}</TableCell>
+                                  <TableCell>
+                                    <Button
+                                      variant="contained"
+                                      style={{
+                                        backgroundColor: "#FF0000",
+                                        fontWeight: "bold",
+                                      }}
+                                      onClick={() => {
+                                        deleteBoardFromProject(board, proj._id);
+                                      }}
+                                    >
+                                      Delete
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                      </CardContent>
+                    </Card>
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>

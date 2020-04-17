@@ -15,7 +15,6 @@ import {
   Button,
 } from "@material-ui/core";
 import { Alert, AlertTitle } from "@material-ui/lab";
-const moment = require("moment");
 
 const UpdateUserStory = () => {
   const initialState = {
@@ -23,6 +22,8 @@ const UpdateUserStory = () => {
     selectedStory: {},
     success: false,
     status: ["Open", "Development", "Testing", "Completed"],
+    boards: [],
+    users: [],
   };
   const reducer = (state, newState) => ({
     ...state,
@@ -30,6 +31,8 @@ const UpdateUserStory = () => {
   });
   const [state, setState] = useReducer(reducer, initialState);
   useEffect(() => {
+    getAllBoards();
+    getAllUsers();
     getAllUserStory();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -50,41 +53,8 @@ const UpdateUserStory = () => {
         }),
       });
       let json = await response.json();
-      let allStoryData = [];
 
-      for (let i = 0; i < json.data.userstories.length; i++) {
-        let element = json.data.userstories[i];
-        let boardsResponse = [];
-        let userResponse = [];
-        await getAllBoards().then((value) => {
-          boardsResponse = value;
-        });
-
-        let board = boardsResponse.find(
-          (b) => b._id === element.userStory_boardId
-        );
-        await getAllUsers().then((value) => {
-          userResponse = value;
-        });
-        let user = userResponse.find((u) => u._id === element.userStory_userId);
-        allStoryData.push({
-          _id: element._id,
-          name: element.name,
-          estimate: element.estimate,
-          hoursWorked: element.hoursWorked,
-          reestimate: element.reestimate,
-          storyPoints: element.storyPoints,
-          creationDate: element.creationDate,
-          completionDate: element.completionDate,
-          status: element.status,
-          userStory_boardId: element.userStory_boardId,
-          userStory_userId: element.userStory_userId,
-          boardName: board.name,
-          userName: user.username,
-        });
-      }
-
-      setState({ userStories: allStoryData });
+      setState({ userStories: json.data.userstories });
     } catch (error) {
       console.log(error);
     }
@@ -103,7 +73,7 @@ const UpdateUserStory = () => {
         }),
       });
       let json = await response.json();
-      return json.data.boards;
+      setState({ boards: json.data.boards });
     } catch (error) {
       console.log(error);
     }
@@ -123,9 +93,9 @@ const UpdateUserStory = () => {
         }),
       });
       let json = await response.json();
-      return json.data.users;
-    } catch (err) {
-      console.log(err);
+      setState({ users: json.data.users });
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -144,18 +114,40 @@ const UpdateUserStory = () => {
         selectedStory,
         success: false,
       });
-    } catch (ex) {
-      console.log(ex);
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const handleCloseStory = () => {
-    setState({
-      selectedStory: {
-        ...state.selectedStory,
-        completionDate: moment().format("YYYY-MM-DD HH:mm:ss"),
-      },
+  const handleCloseStory = async () => {
+    const resp = await fetch("http://localhost:5000/graphql", {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({
+        query: `mutation { closeUserStory(
+            id: "${state.selectedStory._id}"
+          ) {
+            _id, 
+            name, 
+            creationDate, 
+            completionDate,
+            status, 
+            estimate, 
+            hoursWorked, 
+            reestimate, 
+            storyPoints,
+            userStory_boardId, 
+            userStory_userId
+          }
+        }`,
+      }),
     });
+    let json = await resp.json();
+    setState({
+      selectedStory: json.data.closeUserStory,
+    });
+
+    window.location.reload();
   };
 
   const handleStatusClick = (e) => {
@@ -193,7 +185,9 @@ const UpdateUserStory = () => {
             id: "${_id}",
             name: "${name}", 
             creationDate: "${creationDate}", 
-            completionDate: "${completionDate}",
+            completionDate: ${
+              completionDate ? '"' + completionDate + '"' : null
+            },
             status: "${status}",
             estimate: ${estimate},
             hoursWorked: ${hoursWorked},
@@ -229,9 +223,18 @@ const UpdateUserStory = () => {
       });
 
       getAllUserStory();
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
+  };
+
+  const handleBoardClick = (e) => {
+    setState({
+      selectedStory: {
+        ...state.selectedStory,
+        userStory_boardId: e.target.value,
+      },
+    });
   };
 
   return (
@@ -259,7 +262,7 @@ const UpdateUserStory = () => {
             <TableContainer>
               <Table>
                 <TableBody>
-                  <TableRow key={Math.random()}>
+                  <TableRow>
                     <TableCell
                       style={{
                         fontWeight: "bold",
@@ -293,9 +296,21 @@ const UpdateUserStory = () => {
                         fontSize: 17,
                       }}
                     >
-                      Project:
+                      Board:
                     </TableCell>
-                    <TableCell>{state.selectedStory.boardName}</TableCell>
+                    <TableCell>
+                      <Select
+                        fullWidth
+                        value={state.selectedStory.userStory_boardId}
+                        onChange={(e) => handleBoardClick(e)}
+                      >
+                        {state.boards.map((board) => (
+                          <MenuItem key={board._id} value={board._id}>
+                            {board.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </TableCell>
                   </TableRow>
                   <TableRow>
                     <TableCell
@@ -306,7 +321,12 @@ const UpdateUserStory = () => {
                     >
                       Estimate:
                     </TableCell>
-                    <TableCell>{state.selectedStory.estimate}</TableCell>
+                    <TableCell>
+                      <TextField
+                        disabled
+                        value={state.selectedStory.estimate}
+                      />
+                    </TableCell>
                     <TableCell
                       style={{
                         fontWeight: "bold",
@@ -339,7 +359,12 @@ const UpdateUserStory = () => {
                     >
                       Creation Date:
                     </TableCell>
-                    <TableCell>{state.selectedStory.creationDate}</TableCell>
+                    <TableCell>
+                      <TextField
+                        disabled
+                        value={state.selectedStory.creationDate}
+                      />
+                    </TableCell>
                     <TableCell
                       style={{
                         fontWeight: "bold",
@@ -400,7 +425,7 @@ const UpdateUserStory = () => {
                           onClick={handleCloseStory}
                           variant="contained"
                           color="secondary"
-                          disabled={state.selectedStory.completionDate !== ""}
+                          disabled={state.selectedStory.completionDate !== null}
                         >
                           Close Story
                         </Button>

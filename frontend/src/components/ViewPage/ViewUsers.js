@@ -8,7 +8,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField
+  TextField,
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
@@ -17,7 +17,7 @@ const ViewUsers = () => {
     users: [],
     user: {},
     projectName: null,
-    projects: []
+    projects: [],
   };
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
@@ -26,7 +26,7 @@ const ViewUsers = () => {
     fetchAllUsers();
   }, []);
 
-  const handleClick = value => {
+  const handleClick = (value) => {
     fetchUser(value);
   };
 
@@ -40,20 +40,20 @@ const ViewUsers = () => {
                 _id
                 username
                 isAdmin
-              }}`
-        })
+              }}`,
+        }),
       });
       let json = await response.json();
 
       setState({
-        users: json.data.users
+        users: json.data.users,
       });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const fetchUser = async value => {
+  const fetchUser = async (value) => {
     try {
       if (value) {
         const query = `{ userbyname(name: "${value}") {
@@ -66,8 +66,8 @@ const ViewUsers = () => {
           method: "POST",
           headers: { "Content-Type": "application/json; charset=utf-8" },
           body: JSON.stringify({
-            query: query
-          })
+            query: query,
+          }),
         });
         let json = await response.json();
 
@@ -77,12 +77,10 @@ const ViewUsers = () => {
       } else {
         setState({ userStory: {} });
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
-
-  const fetchAdditional = async user => {};
 
   const UserInfo = () => {
     return (
@@ -116,7 +114,7 @@ const ViewUsers = () => {
   const Projects = () => {
     return (
       <div>
-        {state.projects.map(project => (
+        {state.projects.map((project) => (
           <div key={Math.random()}>
             <p>Project Name: {project.name}</p>
           </div>
@@ -129,11 +127,11 @@ const ViewUsers = () => {
     <div>
       <Autocomplete
         id="users"
-        options={[...state.users.map(user => user.username)]}
-        getOptionLabel={option => option}
+        options={[...state.users.map((user) => user.username)]}
+        getOptionLabel={(option) => option}
         onChange={(event, value) => handleClick(value)}
         style={{ margin: "5% 0" }}
-        renderInput={param => (
+        renderInput={(param) => (
           <TextField {...param} label="Users" variant="outlined" />
         )}
       />

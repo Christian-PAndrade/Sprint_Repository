@@ -13,6 +13,8 @@ import {
   Button,
 } from "@material-ui/core";
 import { Alert, AlertTitle } from "@material-ui/lab";
+import { calculateUserVelocities } from "../helper";
+
 const moment = require("moment");
 
 const UpdateBoards = () => {
@@ -102,8 +104,8 @@ const UpdateBoards = () => {
         selectedBoard,
         success: false,
       });
-    } catch (ex) {
-      console.log(ex);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -126,7 +128,7 @@ const UpdateBoards = () => {
           query: `mutation { updateboard (
             id: "${_id}",
             startDate: "${startDate}",
-            endDate: "${endDate}",
+            endDate: ${endDate ? '"' + endDate + '"' : null},
             name: "${name}",
             projectId: "${board_projectId}",
           ) {
@@ -139,7 +141,6 @@ const UpdateBoards = () => {
         }),
       });
       let json = await response.json();
-      console.log(json);
 
       setState({
         selectedBoard: {
@@ -151,8 +152,8 @@ const UpdateBoards = () => {
       });
 
       getAllBoards();
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -199,8 +200,11 @@ const UpdateBoards = () => {
       setState({
         selectedBoard: { ...json.data.closeBoard, projectName: proj.name },
       });
-    } catch (ex) {
-      console.log(ex);
+
+      // Sets velocities
+      await calculateUserVelocities(state.selectedBoard._id);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -229,7 +233,7 @@ const UpdateBoards = () => {
             <TableContainer>
               <Table>
                 <TableBody>
-                  <TableRow key={Math.random()}>
+                  <TableRow>
                     <TableCell
                       style={{
                         fontWeight: "bold",
@@ -289,7 +293,11 @@ const UpdateBoards = () => {
                     >
                       End Date:
                     </TableCell>
-                    <TableCell>{state.selectedBoard.endDate}</TableCell>
+                    <TableCell>
+                      {state.selectedBoard.endDate === null
+                        ? ""
+                        : state.selectedBoard.endDate}
+                    </TableCell>
                     <TableCell>
                       <div
                         style={{

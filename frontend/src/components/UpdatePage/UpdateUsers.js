@@ -24,7 +24,7 @@ const UpdateUsers = () => {
     users: [],
     selectedUser: {},
     projects: [],
-    selectedProject: {},
+    selectedProject: { _id: "", name: "" },
     disabled: true,
     success: false,
   };
@@ -53,8 +53,8 @@ const UpdateUsers = () => {
       setState({
         users: json.data.users,
       });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -94,8 +94,8 @@ const UpdateUsers = () => {
       setState({
         selectedUser,
       });
-    } catch (ex) {
-      console.log(ex);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -107,8 +107,8 @@ const UpdateUsers = () => {
         selectedProject: selectedProj,
         disabled: false,
       });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -138,8 +138,11 @@ const UpdateUsers = () => {
         selectedUser: json.data.updateuser,
         success: false,
       });
-    } catch (err) {
-      console.log(err);
+
+      // reload page
+      window.location.reload(true);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -155,7 +158,7 @@ const UpdateUsers = () => {
         name: state.selectedProject.name,
       };
 
-      let response = await fetch("http://localhost:5000/graphql", {
+      await fetch("http://localhost:5000/graphql", {
         method: "POST",
         headers: {
           "Content-Type": "application/json; charset=utf-8",
@@ -171,10 +174,9 @@ const UpdateUsers = () => {
           }}`,
         }),
       });
-      let json = await response.json();
       setState({ success: true });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -213,7 +215,7 @@ const UpdateUsers = () => {
                 <TableContainer>
                   <Table>
                     <TableBody>
-                      <TableRow key={Math.random()}>
+                      <TableRow>
                         <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
                           Name:
                         </TableCell>
@@ -230,7 +232,7 @@ const UpdateUsers = () => {
                               setState({
                                 selectedUser: {
                                   ...state.selectedUser,
-                                  name: e.target.value,
+                                  username: e.target.value,
                                 },
                               })
                             }
@@ -290,7 +292,7 @@ const UpdateUsers = () => {
                 {state.success && (
                   <Alert severity="success" variant="filled">
                     <AlertTitle>Success</AlertTitle>
-                    {state.selectedUser.username} has been added to
+                    {state.selectedUser.username} has been added to{" "}
                     {state.selectedProject.name}!
                   </Alert>
                 )}
@@ -311,7 +313,7 @@ const UpdateUsers = () => {
                           <Select
                             fullWidth
                             id="projects"
-                            value={state.selectedProject.name}
+                            value={state.selectedProject._id}
                             onChange={(e) => handleProjClick(e)}
                           >
                             {state.projects.map((proj, index) => (

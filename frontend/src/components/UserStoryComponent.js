@@ -78,7 +78,7 @@ const UserStoryComponent = () => {
     const dateString = moment().format("YYYY-MM-DD HH:mm:ss");
 
     try {
-      let response = await fetch("http://localhost:5000/graphql", {
+      await fetch("http://localhost:5000/graphql", {
         origin: "*",
         method: "POST",
         headers: {
@@ -92,15 +92,14 @@ const UserStoryComponent = () => {
             status: "Open", estimate: ${
               state.estimate
             }, hoursWorked: 0, reestimate: "", 
-            storyPoints: ${state.storyPoints}, userStory_boardId: "${
-            state.boardID ? state.boardID : null
-          }", 
-            userStory_userId: "${state.userID ? state.userID : null}")
+            storyPoints: ${state.storyPoints}, userStory_boardId: ${
+            state.boardID ? '"' + state.boardID + '"' : null
+          }, 
+            userStory_userId: ${state.userID ? '"' + state.userID + '"' : null})
             {name, creationDate, completionDate, status, estimate, hoursWorked, reestimate, storyPoints, userStory_boardId, userStory_userId}}`,
         }),
       });
-      let json = await response.json();
-      console.log(json);
+
       setState({
         name: "",
         boardID: "",
@@ -131,6 +130,7 @@ const UserStoryComponent = () => {
       let flag = false;
       for (let i = 0; i < json.data.projectsbyuser.length; i++) {
         let element = json.data.projectsbyuser[i];
+        // eslint-disable-next-line
         await getProjectNames(element).then((value) => {
           projArray.push(value);
           flag = true;
@@ -197,92 +197,94 @@ const UserStoryComponent = () => {
   const emptyorundefined = state.name === undefined || state.name === "";
 
   return (
-    <MuiThemeProvider theme={theme} className={classes.container}>
-      <Card className={classes.textBox}>
-        <CardHeader
-          title="Add A User Story"
-          color="inherit"
-          style={{ textAlign: "center" }}
-        />
-        <CardContent>
-          <TextField
-            onChange={handleNameInput}
-            helperText="Enter a user story name here"
-            value={state.name}
+    <MuiThemeProvider theme={theme}>
+      <div className={classes.container}>
+        <Card className={classes.textBox}>
+          <CardHeader
+            title="Add A User Story"
+            color="inherit"
+            style={{ textAlign: "center" }}
           />
-          <br />
-          <TextField
-            type="number"
-            inputProps={{ min: "0" }}
-            onChange={handleEstimateInput}
-            helperText="Enter estimated hours"
-            value={state.estimate}
-          />
-          <br />
-          <TextField
-            type="number"
-            inputProps={{ min: "0" }}
-            onChange={handleSPInput}
-            helperText="Enter story points"
-            value={state.storyPoints}
-          />
-          <br /> <br />
-          <Typography>Assign a user: </Typography>
-          <br />
-          <Autocomplete
-            key={state.clear}
-            id="users"
-            options={state.users.map((user) => user)}
-            onChange={(event, value) => {
-              getUserProjects(event, value);
-            }}
-            getOptionLabel={(user) => user.username}
-            style={{ width: 300 }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="current users"
-                variant="outlined"
-                fullWidth
-              />
+          <CardContent>
+            <TextField
+              onChange={handleNameInput}
+              helperText="Enter a user story name here"
+              value={state.name}
+            />
+            <br />
+            <TextField
+              type="number"
+              inputProps={{ min: "0" }}
+              onChange={handleEstimateInput}
+              helperText="Enter estimated hours"
+              value={state.estimate}
+            />
+            <br />
+            <TextField
+              type="number"
+              inputProps={{ min: "0" }}
+              onChange={handleSPInput}
+              helperText="Enter story points"
+              value={state.storyPoints}
+            />
+            <br /> <br />
+            <Typography>Assign a user: </Typography>
+            <br />
+            <Autocomplete
+              key={state.clear}
+              id="users"
+              options={state.users.map((user) => user)}
+              onChange={(event, value) => {
+                getUserProjects(event, value);
+              }}
+              getOptionLabel={(user) => user.username}
+              style={{ width: 300 }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Current Users"
+                  variant="outlined"
+                  fullWidth
+                />
+              )}
+            />
+            <br />
+            {state.userHasProjects && (
+              <Fragment>
+                <Typography>Assign to a Board: </Typography>
+                <br />
+                <Autocomplete
+                  key={state.clear}
+                  id="boards"
+                  options={state.boards.map((boards) => boards)}
+                  onChange={(event, value) => {
+                    getBoardID(event, value);
+                  }}
+                  getOptionLabel={(boards) => boards.name}
+                  style={{ width: 300 }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="current boards"
+                      variant="outlined"
+                      fullWidth
+                    />
+                  )}
+                />
+                <br />
+              </Fragment>
             )}
-          />
-          <br />
-          {state.userHasProjects && (
-            <Fragment>
-              <Typography>Assign to a Board: </Typography>
-              <br />
-              <Autocomplete
-                key={state.clear}
-                id="boards"
-                options={state.boards.map((boards) => boards)}
-                onChange={(event, value) => {
-                  getBoardID(event, value);
-                }}
-                getOptionLabel={(boards) => boards.name}
-                style={{ width: 300 }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="current boards"
-                    variant="outlined"
-                    fullWidth
-                  />
-                )}
-              />
-              <br />
-            </Fragment>
-          )}
-          <IconButton
-            color="secondary"
-            style={{ marginTop: 50, float: "right" }}
-            onClick={onAddClicked}
-            disabled={emptyorundefined}
-          >
-            <AddCircle fontSize="large" />
-          </IconButton>
-        </CardContent>
-      </Card>
+            <IconButton
+              color="secondary"
+              style={{ marginTop: 50, float: "right" }}
+              onClick={onAddClicked}
+              disabled={emptyorundefined}
+            >
+              <AddCircle fontSize="large" />
+            </IconButton>
+          </CardContent>
+        </Card>
+      </div>
     </MuiThemeProvider>
   );
 };
