@@ -40,7 +40,7 @@ const ProjectComponent = () => {
     myHeaders.append("Content-Type", "application/json");
 
     try {
-      let response = await fetch("http://localhost:5000/graphql", {
+      await fetch("http://localhost:5000/graphql", {
         origin: "*",
         method: "POST",
         headers: {
@@ -50,7 +50,7 @@ const ProjectComponent = () => {
           query: `mutation{ addproject(name: "${state.name}"){name}}`,
         }),
       });
-      let json = await response.json();
+
       setState({
         name: "",
       });

@@ -55,8 +55,8 @@ const ViewSubTask = () => {
       setState({
         tasks: json.data.tasks,
       });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -92,8 +92,8 @@ const ViewSubTask = () => {
       } else {
         setState({ task: {} });
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -146,8 +146,8 @@ const ViewSubTask = () => {
 
       let jsonUser = await responseUser.json();
       setState({ User: jsonUser.data.userbyid.username });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 

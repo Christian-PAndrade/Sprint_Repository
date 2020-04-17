@@ -137,7 +137,7 @@ const schema = buildSchema(`
         adduser(username: String, isAdmin: Boolean): User,
         addproject(name: String): Project,
         adduserstory(name: String, creationDate: String, completionDate: String, status: String, estimate: Float, hoursWorked: Float, reestimate: String, storyPoints: Float, userStory_boardId: String, userStory_userId: String): UserStory,
-        addtask(name: String, creationDate: String, completionDate: String, status: String, estimate: Float, sprint: String, userstory: String, userassigned: String): Task,
+        addtask(name: String, creationDate: String, completionDate: String, status: String, estimate: Float, timeWorked: Float sprint: String, userstory: String, userassigned: String): Task,
         adduestimate(estimate: Float, actual: Float, accuracy: Float, board: String) : UserEstimate,
         addtestimate(accuracy: Float, boardid: String) : TeamEstimate,
         adduvelocity(velocity: Float, userid: String, boardid: String): UserVelocity,
@@ -171,6 +171,7 @@ const schema = buildSchema(`
         updateCompleteDateTask(id: String): Task
         logTimeToTask(id: String, time: Float): Task
         closeBoard(id: String, endDate: String): Board
+        closeUserStory(id: String): UserStory
     }
 `);
 

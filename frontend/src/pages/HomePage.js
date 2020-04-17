@@ -23,7 +23,7 @@ function HomePage() {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const handleClick = event => {
+  const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 

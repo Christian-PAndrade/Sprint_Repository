@@ -138,8 +138,8 @@ const UpdateProject = () => {
       setState({
         selectedProject,
       });
-    } catch (ex) {
-      console.log(ex);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -167,8 +167,9 @@ const UpdateProject = () => {
       setState({
         selectedProject: json.data.updateproject,
       });
-    } catch (err) {
-      console.log(err);
+      window.location.reload(true);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -191,7 +192,7 @@ const UpdateProject = () => {
             <TableContainer>
               <Table>
                 <TableBody>
-                  <TableRow key={Math.random()}>
+                  <TableRow>
                     <TableCell
                       style={{
                         fontWeight: "bold",

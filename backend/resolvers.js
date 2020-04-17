@@ -363,7 +363,7 @@ const resolvers = {
     let board = {
       startDate: args.startDate,
       name: args.name,
-      board_projectId: args.board_projectId,
+      board_projectId: new mongo.ObjectID(args.board_projectId),
     };
 
     let results = await rts.addOne(db, "Boards", board);
@@ -399,6 +399,7 @@ const resolvers = {
       completionDate: null,
       status: args.status,
       estimate: args.estimate,
+      timeWorked: args.timeWorked,
       task_sprint: new mongo.ObjectID(args.sprint),
       task_userStoryId: new mongo.ObjectID(args.userstory),
       task_assignedToId: new mongo.ObjectID(args.userassigned),
@@ -768,6 +769,7 @@ const resolvers = {
   updateCompleteDateTask: async (args) => {
     let db = await rts.loadDB();
     let completionDate = moment().format("YYYY-MM-DD HH:mm:ss");
+    let status = "Completed";
 
     let results = await rts.updateOne(
       db,
@@ -775,7 +777,7 @@ const resolvers = {
       {
         _id: new mongo.ObjectID(args.id),
       },
-      { completionDate }
+      { completionDate, status }
     );
 
     return results.value ? results.value : null;
@@ -790,7 +792,7 @@ const resolvers = {
       _id: new mongo.ObjectID(args.id),
     });
 
-    let timeWorked = currTask.timeWorked;
+    let timeWorked = currTask.timeWorked || 0;
 
     timeWorked += args.time;
 
@@ -843,6 +845,28 @@ const resolvers = {
     // refetch
     if (upd.value) {
       return await rts.findOne(db, "Boards", { _id });
+    }
+
+    return null;
+  },
+
+  // closes a user story ('done')
+  closeUserStory: async (args) => {
+    let db = await rts.loadDB();
+
+    const _id = new mongo.ObjectID(args.id);
+    const completionDate = moment().format("YYYY-MM-DD HH:mm:ss");
+    const status = "Completed";
+
+    const upd = await rts.updateOne(
+      db,
+      "UserStories",
+      { _id },
+      { completionDate, status }
+    );
+    // refetch
+    if (upd.value) {
+      return await rts.findOne(db, "UserStories", { _id });
     }
 
     return null;

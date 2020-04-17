@@ -7,7 +7,7 @@ import {
   IconButton,
   Snackbar,
   TextField,
-  Typography
+  Typography,
 } from "@material-ui/core";
 import theme from "../styles/theme";
 import "../App.css";
@@ -38,7 +38,7 @@ const ProjectComponent = () => {
     snackbarMsg: "",
     name: "",
     projects: [],
-    usersByProject: []
+    usersByProject: [],
   };
 
   const reducer = (state, newState) => ({ ...state, ...newState });
@@ -52,27 +52,26 @@ const ProjectComponent = () => {
     try {
       setState({
         showMsg: true,
-        snackBarMsg: "Attempting to load users from server..."
+        snackBarMsg: "Attempting to load users from server...",
       });
 
       let response = await fetch("http://localhost:5000/graphql", {
         origin: "*",
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify({ query: `query{projects{_id,name}}` })
+        body: JSON.stringify({ query: `query{projects{_id,name}}` }),
       });
       let json = await response.json();
       setState({
         showMsg: true,
         snackBarMsg: "Project data loaded",
-        projects: json.data.projects
+        projects: json.data.projects,
       });
-      console.log(json.data.projects);
     } catch (error) {
       console.log(error);
       setState({
         showMsg: true,
-        snackBarMsg: `Problem loading server data - ${error.message}`
+        snackBarMsg: `Problem loading server data - ${error.message}`,
       });
     }
   };
@@ -86,17 +85,17 @@ const ProjectComponent = () => {
         origin: "*",
         method: "POST",
         headers: {
-          "Content-Type": "application/json; charset=utf-8"
+          "Content-Type": "application/json; charset=utf-8",
         },
         body: JSON.stringify({
-          query: `mutation{ addproject(name: "${state.name}"){name}}`
-        })
+          query: `mutation{ addproject(name: "${state.name}"){name}}`,
+        }),
       });
       let json = await response.json();
       setState({
         showMsg: true,
         snackbarMsg: json.msg,
-        name: ""
+        name: "",
       });
     } catch (error) {
       setState({ snackbarMsg: error.message, showMsg: true });
@@ -106,11 +105,11 @@ const ProjectComponent = () => {
   const snackbarClose = () => {
     setState({
       showMsg: false,
-      snackBarMsg: `${state.name} added to the database!`
+      snackBarMsg: `${state.name} added to the database!`,
     });
   };
 
-  const handleNameInput = e => {
+  const handleNameInput = (e) => {
     setState({ name: e.target.value });
   };
 
@@ -121,8 +120,8 @@ const ProjectComponent = () => {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({
-          query: `{usersbyproject(id:\"${v._id}\"){_id,username,isAdmin,projectId}}`
-        })
+          query: `{usersbyproject(id:\"${v._id}\"){_id,username,isAdmin,projectId}}`,
+        }),
       });
       let json = await response.json();
       setState({ usersByProject: json.data.usersbyproject });
@@ -155,13 +154,13 @@ const ProjectComponent = () => {
           <br />
           <Autocomplete
             id="projects"
-            options={state.projects.map(projects => projects)}
+            options={state.projects.map((projects) => projects)}
             onChange={(event, value) => {
               getProjectUsers(event, value);
             }}
-            getOptionLabel={projects => projects.name}
+            getOptionLabel={(projects) => projects.name}
             style={{ width: 300 }}
-            renderInput={params => (
+            renderInput={(params) => (
               <TextField
                 {...params}
                 label="current projects"

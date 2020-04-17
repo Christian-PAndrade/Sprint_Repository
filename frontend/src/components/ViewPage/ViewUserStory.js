@@ -1,7 +1,6 @@
 import React, { useReducer, useEffect } from "react";
 import theme from "../../styles/theme";
 import {
-  Button,
   Card,
   CardHeader,
   CardContent,
@@ -11,7 +10,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   MuiThemeProvider,
   TextField,
 } from "@material-ui/core";
@@ -21,7 +19,8 @@ const ViewUserStory = () => {
   const initialState = {
     userStories: [],
     userStory: {},
-    sprintName: null,
+    sprintName: "",
+    boards: [],
     tasks: [],
   };
   const reducer = (state, newState) => ({ ...state, ...newState });
@@ -29,6 +28,7 @@ const ViewUserStory = () => {
 
   useEffect(() => {
     fetchAllUserStories();
+    fetchAllSprints();
   }, []);
 
   const handleClick = (value) => {
@@ -51,6 +51,7 @@ const ViewUserStory = () => {
             hoursWorked
             reestimate
             storyPoints
+            userStory_boardId
             }}`,
         }),
       });
@@ -59,8 +60,8 @@ const ViewUserStory = () => {
       setState({
         userStories: json.data.userstories,
       });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -89,14 +90,21 @@ const ViewUserStory = () => {
         });
         let json = await response.json();
 
-        setState({ userStory: json.data.usbyname });
-        console.log(json.data.usbyname);
         await fetchAdditional(json.data.usbyname);
+
+        // Set sprint name
+        const sprintName = state.boards.find(
+          (board) => board._id === json.data.usbyname.userStory_boardId
+        );
+        setState({
+          userStory: json.data.usbyname,
+          sprintName: sprintName.name,
+        });
       } else {
         setState({ userStory: {} });
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -113,11 +121,23 @@ const ViewUserStory = () => {
       });
 
       let jsonTasks = await responseTasks.json();
-      console.log(jsonTasks.data.taskbyuserstory);
       setState({ tasks: jsonTasks.data.taskbyuserstory });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
+  };
+
+  const fetchAllSprints = async () => {
+    const resp = await fetch("http://localhost:5000/graphql", {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({
+        query: `{boards { _id, name } }`,
+      }),
+    });
+
+    const json = await resp.json();
+    setState({ boards: json.data.boards });
   };
 
   const UserStory = () => {
@@ -185,8 +205,8 @@ const ViewUserStory = () => {
         <Card>
           <CardHeader title="Tasks" />
           <CardContent>
-            {state.tasks.map((task) => (
-              <Card style={{ marginBottom: "2%" }}>
+            {state.tasks.map((task, index) => (
+              <Card key={index} style={{ marginBottom: "2%" }}>
                 <CardHeader title={task.name} />
                 <CardContent>
                   <TableContainer>

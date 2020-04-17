@@ -60,11 +60,12 @@ const UpdateSubTask = () => {
         }),
       });
       let json = await response.json();
+
       setState({
         tasks: json.data.tasks,
       });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -86,8 +87,8 @@ const UpdateSubTask = () => {
       setState({
         userStories: json.data.userstories,
       });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -109,8 +110,8 @@ const UpdateSubTask = () => {
       setState({
         sprints: json.data.boards,
       });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -132,8 +133,8 @@ const UpdateSubTask = () => {
       setState({
         users: json.data.users,
       });
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -147,10 +148,15 @@ const UpdateSubTask = () => {
       // Get the task with name == value
       const selectedTask = state.tasks.find((task) => task.name === value);
       setState({
-        selectedTask,
+        selectedTask: {
+          ...selectedTask,
+          status: updateOptions.findIndex(
+            (status) => status === selectedTask.status
+          ),
+        },
       });
-    } catch (ex) {
-      console.log(ex);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -183,14 +189,20 @@ const UpdateSubTask = () => {
         name,
         creationDate,
         completionDate,
-        status,
         estimate,
         timeWorked,
         task_userStoryId,
         task_assignedToId,
       } = state.selectedTask;
 
-      console.log(completionDate);
+      const status =
+        state.selectedTask.status === 0
+          ? "Open"
+          : 1
+          ? "Development"
+          : 2
+          ? "Testing"
+          : "Completed";
 
       let response = await fetch("http://localhost:5000/graphql", {
         method: "POST",
@@ -222,9 +234,16 @@ const UpdateSubTask = () => {
         }),
       });
       let json = await response.json();
-      setState({ selectedTask: json.data.updatetask });
-    } catch (err) {
-      console.log(err);
+      setState({
+        selectedTask: {
+          ...json.data.updatetask,
+          status: updateOptions.findIndex(
+            (status) => status === json.data.updatetask.status
+          ),
+        },
+      });
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -252,9 +271,18 @@ const UpdateSubTask = () => {
       });
 
       let json = await response.json();
-      setState({ selectedTask: json.data.updateCompleteDateTask });
-    } catch (ex) {
-      console.log(ex);
+      setState({
+        selectedTask: {
+          ...json.data.updateCompleteDateTask,
+          status: updateOptions.findIndex(
+            (status) => status === json.data.updateCompleteDateTask.status
+          ),
+        },
+      });
+
+      window.location.reload(true);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -285,12 +313,29 @@ const UpdateSubTask = () => {
       });
 
       let json = await response.json();
-      console.log(json.data.logTimeToTask);
-      setState({ selectedTask: json.data.logTimeToTask });
-    } catch (ex) {
-      console.log(ex);
+      setState({
+        selectedTask: {
+          ...json.data.logTimeToTask,
+          status: updateOptions.findIndex(
+            (status) => status === json.data.logTimeToTask.status
+          ),
+        },
+      });
+    } catch (error) {
+      console.log(error);
     }
   };
+
+  const handleSelectStatus = (e) => {
+    setState({
+      selectedTask: {
+        ...state.selectedTask,
+        status: e.target.value,
+      },
+    });
+  };
+
+  const updateOptions = ["Open", "Development", "Testing", "Completed"];
 
   // Decides whether or not to show complete button
   const showComplete =
@@ -339,18 +384,17 @@ const UpdateSubTask = () => {
                       Status:
                     </TableCell>
                     <TableCell>
-                      <TextField
+                      <Select
                         fullWidth
                         value={state.selectedTask.status}
-                        onChange={(e) =>
-                          setState({
-                            selectedTask: {
-                              ...state.selectedTask,
-                              status: e.target.value,
-                            },
-                          })
-                        }
-                      />
+                        onChange={(e) => handleSelectStatus(e)}
+                      >
+                        {updateOptions.map((opt, index) => (
+                          <MenuItem key={index} value={index}>
+                            {opt}
+                          </MenuItem>
+                        ))}
+                      </Select>
                     </TableCell>
                   </TableRow>
                   <TableRow>
@@ -416,14 +460,6 @@ const UpdateSubTask = () => {
                         fullWidth
                         disabled
                         value={state.selectedTask.timeWorked}
-                        onChange={(e) =>
-                          setState({
-                            selectedTask: {
-                              ...state.selectedTask,
-                              timeWorked: e.target.value,
-                            },
-                          })
-                        }
                       />
                     </TableCell>
                   </TableRow>
