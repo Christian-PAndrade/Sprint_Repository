@@ -9,21 +9,26 @@ import {
   TableHead,
   TableRow,
   TextField,
+  TableBody,
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import { makeQuery } from "../helper";
 
 const ViewUsers = () => {
   const initialState = {
     users: [],
-    user: {},
-    projectName: null,
     projects: [],
+    boards: [],
+    user: {},
+    userProjects: [],
+    velocities: [],
   };
   const reducer = (state, newState) => ({ ...state, ...newState });
   const [state, setState] = useReducer(reducer, initialState);
 
   useEffect(() => {
     fetchAllUsers();
+    fetchAllProjects();
   }, []);
 
   const handleClick = (value) => {
@@ -31,54 +36,63 @@ const ViewUsers = () => {
   };
 
   const fetchAllUsers = async () => {
-    try {
-      let response = await fetch("http://localhost:5000/graphql", {
-        method: "POST",
-        headers: { "Content-Type": "application/json; charset=utf-8" },
-        body: JSON.stringify({
-          query: `query {users {
-                _id
-                username
-                isAdmin
-              }}`,
-        }),
-      });
-      let json = await response.json();
+    const { users } = await makeQuery(`
+    query {users {
+      _id
+      username
+      isAdmin
+    }}`);
 
-      setState({
-        users: json.data.users,
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    setState({ users });
+  };
+
+  const fetchAllProjects = async () => {
+    const { projects } = await makeQuery(`{projects {_id, name}}`);
+
+    setState({ projects });
   };
 
   const fetchUser = async (value) => {
-    try {
-      if (value) {
-        const query = `{ userbyname(name: "${value}") {
-            _id
-            username
-            isAdmin
-          } }`;
+    if (value) {
+      // Get that user
+      const user = state.users.find((user) => user.username === value);
 
-        let response = await fetch("http://localhost:5000/graphql", {
-          method: "POST",
-          headers: { "Content-Type": "application/json; charset=utf-8" },
-          body: JSON.stringify({
-            query: query,
-          }),
-        });
-        let json = await response.json();
+      // Get the projects that user is working on
+      const { projectsbyuser } = await makeQuery(`
+      { projectsbyuser(userId: "${user._id}") {
+          lookupProjectId
+      }}`);
 
-        setState({ user: json.data.userbyname });
+      // Get velocites for that user
+      const { uvelbyuser } = await makeQuery(
+        `{uvelbyuser(userid: "${user._id}") {
+          velocity
+          userVelocity_boardId
+        }}`
+      );
 
-        //await fetchAdditional(json.data.userbyname);
-      } else {
-        setState({ userStory: {} });
-      }
-    } catch (error) {
-      console.log(error);
+      // gets full board info for velocities
+      let selectedBoards = [];
+      const { boards } = await makeQuery(`{boards {_id, name}}`);
+      uvelbyuser.forEach((vel) => {
+        selectedBoards.push(
+          boards.find((board) => board._id === vel.userVelocity_boardId)
+        );
+      });
+
+      setState({
+        user,
+        userProjects: projectsbyuser,
+        velocities: uvelbyuser,
+        boards: selectedBoards,
+      });
+    } else {
+      setState({
+        user: {},
+        userProjects: [],
+        velocities: [],
+        boards: [],
+      });
     }
   };
 
@@ -110,16 +124,54 @@ const ViewUsers = () => {
     );
   };
 
-  // what's happening here?
   const Projects = () => {
     return (
       <div>
-        {state.projects.map((project) => (
-          <div key={Math.random()}>
-            <p>Project Name: {project.name}</p>
-          </div>
-        ))}
+        Works in projects:
+        {state.userProjects.map((project, index) => {
+          const fullProjInfo = state.projects.find(
+            (proj) => proj._id === project.lookupProjectId
+          );
+          return (
+            <div key={index}>
+              <p>{fullProjInfo.name}</p>
+            </div>
+          );
+        })}
       </div>
+    );
+  };
+
+  const Velocites = () => {
+    return (
+      <Card style={{ width: "60%" }}>
+        <CardHeader title="Velocties" />
+        <CardContent>
+          <TableContainer>
+            <Table>
+              <TableBody>
+                {state.velocities.map((velocity, index) => {
+                  const sprintData = state.boards.find(
+                    (board) => board._id === velocity.userVelocity_boardId
+                  );
+                  return (
+                    <TableRow key={index}>
+                      <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                        Board/Sprint:
+                      </TableCell>
+                      <TableCell>{sprintData.name}</TableCell>
+                      <TableCell style={{ fontWeight: "bold", fontSize: 17 }}>
+                        Velocity:
+                      </TableCell>
+                      <TableCell>{velocity.velocity}</TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </CardContent>
+      </Card>
     );
   };
 
@@ -136,10 +188,21 @@ const ViewUsers = () => {
         )}
       />
       {Object.keys(state.user).length > 0 && (
-        <div style={{ display: "flex", justifyContent: "space-around" }}>
-          <UserInfo />
-          <Projects />
-        </div>
+        <>
+          <div style={{ display: "flex", justifyContent: "space-around" }}>
+            <UserInfo />
+            <Projects />
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              marginTop: "5%",
+            }}
+          >
+            <Velocites />
+          </div>
+        </>
       )}
     </div>
   );

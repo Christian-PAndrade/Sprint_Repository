@@ -100,4 +100,23 @@ const calculateUserVelocities = async (sprintId) => {
   });
 };
 
-module.exports = { PageTitle, calculateUserVelocities };
+// makes a query and returns the data as an array
+const makeQuery = async (query) => {
+  try {
+    let response = await fetch("http://localhost:5000/graphql", {
+      method: "POST",
+      headers: { "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({
+        query,
+      }),
+    });
+    let json = await response.json();
+
+    //console.log({ json });
+    return json.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+module.exports = { PageTitle, calculateUserVelocities, makeQuery };
